@@ -2,8 +2,10 @@ package com.lamdangfixbug.qmshoe.product.payload.response;
 
 import com.lamdangfixbug.qmshoe.product.entity.Category;
 import com.lamdangfixbug.qmshoe.product.entity.Product;
+import com.lamdangfixbug.qmshoe.product.entity.ProductOption;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -18,6 +20,8 @@ public class ProductResponse {
     private String slug;
     private String brand;
     private String[] categories;
+    private LocalDateTime createdAt;
+    private List<ProductOptionResponse> options;
 
     public static ProductResponse from(final Product product) {
         ProductResponseBuilder builder = ProductResponse.builder();
@@ -27,10 +31,13 @@ public class ProductResponse {
                 .price(product.getPrice())
                 .slug(product.getSlug())
                 .brand(product.getBrand().getName())
+                .createdAt(product.getCreatedAt())
                 .categories(
                         product.getCategories().stream().map(Category::getName).toArray(String[]::new)
                 );
-
+        if(product.getProductOptions()!=null){
+            builder.options(product.getProductOptions().stream().map(ProductOptionResponse::from).toList());
+        }
         return builder.build();
     }
 }

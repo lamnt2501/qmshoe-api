@@ -1,6 +1,6 @@
 package com.lamdangfixbug.qmshoe.product.service.impl;
 
-import com.lamdangfixbug.qmshoe.exceptions.ResourceNotFondException;
+import com.lamdangfixbug.qmshoe.exceptions.ResourceNotFoundException;
 import com.lamdangfixbug.qmshoe.product.entity.Brand;
 import com.lamdangfixbug.qmshoe.product.entity.Category;
 import com.lamdangfixbug.qmshoe.product.entity.Product;
@@ -29,10 +29,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product createProduct(ProductRequest productRequest) {
-        Brand brand = brandRepository.findById(productRequest.getBrandId()).orElseThrow(() -> new ResourceNotFondException("Can't find brand with id " + productRequest.getBrandId()));
+        Brand brand = brandRepository.findById(productRequest.getBrandId()).orElseThrow(() -> new ResourceNotFoundException("Couldn't find brand with id: " + productRequest.getBrandId()));
         List<Category> categories = new ArrayList<>();
         for (int id : productRequest.getCategoryId()) {
-            categories.add(categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFondException("Can't find category with id " + id)));
+            categories.add(categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Couldn't find category with id: " + id)));
         }
 
         Product product = Product.builder()
@@ -47,17 +47,20 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(Product product) {
-        return productRepository.save(product);
+        if(productRepository.existsById(product.getId())) {
+            return productRepository.save(product);
+        }
+        throw new ResourceNotFoundException("Couldn't find product with id: " + product.getId());
     }
 
     @Override
     public Product findProductById(Integer id) {
-        return productRepository.findById(id).orElseThrow(() -> new ResourceNotFondException("Can't find product with id " + id));
+        return productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Could not find product with id: " + id));
     }
 
     @Override
     public Product findProductBySlug(String slug) {
-        return productRepository.findBySlug(slug).orElseThrow(() -> new ResourceNotFondException("Can't find product with slug " + slug));
+        return productRepository.findBySlug(slug).orElseThrow(() -> new ResourceNotFoundException("Could not find product with slug: " + slug));
     }
 
     @Override

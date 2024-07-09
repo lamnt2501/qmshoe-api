@@ -1,11 +1,10 @@
 package com.lamdangfixbug.qmshoe.product.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.lamdangfixbug.qmshoe.utils.Utils;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,7 +43,8 @@ public class Product {
     private List<Category> categories;
 
     @OneToMany(mappedBy = "product")
-    private List<ProductDetails> productDetails;
+    @JsonManagedReference
+    private List<ProductOption> productOptions;
 
     @OneToMany(mappedBy = "product")
     private List<ProductImage> productImages;

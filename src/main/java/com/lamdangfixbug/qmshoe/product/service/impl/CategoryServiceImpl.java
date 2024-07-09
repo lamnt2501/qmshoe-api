@@ -1,5 +1,6 @@
 package com.lamdangfixbug.qmshoe.product.service.impl;
 
+import com.lamdangfixbug.qmshoe.exceptions.ResourceNotFoundException;
 import com.lamdangfixbug.qmshoe.product.entity.Category;
 import com.lamdangfixbug.qmshoe.product.repository.CategoryRepository;
 import com.lamdangfixbug.qmshoe.product.service.CategoryService;
@@ -37,6 +38,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category updateCategory(Category category) {
-        return categoryRepository.save(category);
+        if (categoryRepository.existsById(category.getId())) {
+            return categoryRepository.save(category);
+        }
+        throw  new ResourceNotFoundException("Couldn't find category with id: " + category.getId());
     }
 }

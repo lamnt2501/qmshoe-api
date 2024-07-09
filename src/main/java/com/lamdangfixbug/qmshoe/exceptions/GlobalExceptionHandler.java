@@ -14,7 +14,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(ErrorDetails.builder().statusCode(500).message("Some thing went wrong"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler({ResourceNotFondException.class})
+    @ExceptionHandler({ResourceNotFoundException.class})
     public ResponseEntity<Object> handleResourceNotFondException(Exception ex, WebRequest request) {
         return  new ResponseEntity<>(ErrorDetails.builder().message(ex.getMessage()).statusCode(404).build(), HttpStatus.NOT_FOUND);
     }
