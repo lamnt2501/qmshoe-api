@@ -11,7 +11,7 @@
 	<groupId>com.lamdangfixbug</groupId>
 	<artifactId>qmshoe</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>qmshoe</name>
+	<name>QMShoe</name>
 	<description>API for QMShoe website</description>
 	<url/>
 	<licenses>
@@ -63,6 +63,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.github.javafaker/javafaker -->
+		<dependency>
+			<groupId>com.github.javafaker</groupId>
+			<artifactId>javafaker</artifactId>
+			<version>1.0.2</version>
 		</dependency>
 	</dependencies>
 
