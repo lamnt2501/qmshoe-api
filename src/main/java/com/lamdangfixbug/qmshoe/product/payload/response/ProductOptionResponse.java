@@ -15,7 +15,7 @@ public class ProductOptionResponse {
     private String color;
     private String size;
     private int quantity;
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     public static ProductOptionResponse from(final ProductOption productOption) {
         return ProductOptionResponse.builder()
@@ -23,7 +23,7 @@ public class ProductOptionResponse {
                 .color(productOption.getColor().getName())
                 .size(productOption.getSize().getSize())
                 .quantity(productOption.getQuantity())
-                .createAt(productOption.getCreatedAt())
+                .createdAt(productOption.getCreatedAt())
                 .build();
     }
 }

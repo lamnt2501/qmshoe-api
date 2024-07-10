@@ -1,9 +1,6 @@
 package com.lamdangfixbug.qmshoe.product.payload.response;
 
-import com.lamdangfixbug.qmshoe.product.entity.Category;
-import com.lamdangfixbug.qmshoe.product.entity.Product;
-import com.lamdangfixbug.qmshoe.product.entity.ProductImage;
-import com.lamdangfixbug.qmshoe.product.entity.ProductOption;
+import com.lamdangfixbug.qmshoe.product.entity.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,8 +17,9 @@ public class ProductResponse {
     private double price;
     private String slug;
     private String brand;
-    private String[] categories;
     private LocalDateTime createdAt;
+    private DiscountResponse discount;
+    private String[] categories;
     private List<ProductOptionResponse> options;
     private List<ProductImageResponse> images;
 
@@ -42,6 +40,9 @@ public class ProductResponse {
         }
         if (product.getProductImages() != null) {
             builder.images(product.getProductImages().stream().map(ProductImageResponse::from).toList());
+        }
+        if(product.getDiscount() != null) {
+            builder.discount(DiscountResponse.from(product.getDiscount()));
         }
         return builder.build();
     }

@@ -50,6 +50,12 @@ public class Product {
     @JsonManagedReference
     private List<ProductImage> productImages;
 
+
+    @ManyToOne
+    @JoinColumn(name = "discount_id")
+    @JsonManagedReference
+    private Discount discount;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
