@@ -9,7 +9,6 @@ import com.lamdangfixbug.qmshoe.product.repository.BrandRepository;
 import com.lamdangfixbug.qmshoe.product.repository.CategoryRepository;
 import com.lamdangfixbug.qmshoe.product.repository.ColorRepository;
 import com.lamdangfixbug.qmshoe.product.repository.SizeRepository;
-import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,9 +25,9 @@ public class QmShoeApplication {
 	CommandLineRunner commandLineRunner(
 			CategoryRepository categoryRepository,
 			BrandRepository brandRepository,
-			SizeRepository sizeRepository, ColorRepository colorRepository, Dotenv dotenv) {
+			SizeRepository sizeRepository,
+			ColorRepository colorRepository) {
 		return args -> {
-			System.out.println(dotenv.get("CLOUDINARY_URL"));
 			Faker faker = new Faker();
 			for(int i = 1; i <= 10; i++) {
 				categoryRepository.save(Category.builder().name("category " + i).description(faker.lorem().sentence()).imgUrl(faker.internet().url()).build());

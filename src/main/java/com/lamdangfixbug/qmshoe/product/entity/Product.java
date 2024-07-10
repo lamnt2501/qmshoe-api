@@ -20,7 +20,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column( nullable = false)
+    @Column(nullable = false)
     private String name;
 
     private String slug;
@@ -47,6 +47,7 @@ public class Product {
     private List<ProductOption> productOptions;
 
     @OneToMany(mappedBy = "product")
+    @JsonManagedReference
     private List<ProductImage> productImages;
 
     @PrePersist

@@ -1,5 +1,6 @@
 package com.lamdangfixbug.qmshoe.product.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lamdangfixbug.qmshoe.product.entity.Product;
 import com.lamdangfixbug.qmshoe.product.entity.ProductOption;
 import com.lamdangfixbug.qmshoe.product.payload.request.ProductOptionRequest;
@@ -11,6 +12,7 @@ import com.lamdangfixbug.qmshoe.product.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -46,8 +48,17 @@ public class ProductController {
     }
 
     //--------------
-    @PostMapping("/variants")
-    public ResponseEntity<ProductOptionResponse> createProductOption(@RequestBody ProductOptionRequest productOptionRequest) {
+    @PostMapping(value = "/variants")
+    public ResponseEntity<ProductOptionResponse> createProductOption(@RequestParam("productOption") String productOptionRequestStr, @RequestParam MultipartFile[] images) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ProductOptionRequest productOptionRequest = null;
+        try{
+            productOptionRequest = objectMapper.readValue(productOptionRequestStr,ProductOptionRequest.class);
+            productOptionRequest.setImages(images);
+        }catch (Exception e){
+            throw new RuntimeException("Could not parse product option request!");
+        }
+
         return new ResponseEntity<>(ProductOptionResponse.from(productOptionService.createProductOption(productOptionRequest)),HttpStatus.CREATED);
     }
 

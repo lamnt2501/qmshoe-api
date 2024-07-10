@@ -1,6 +1,8 @@
 package com.lamdangfixbug.qmshoe.product.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lamdangfixbug.qmshoe.product.entity.Category;
+import com.lamdangfixbug.qmshoe.product.payload.request.CategoryRequest;
 import com.lamdangfixbug.qmshoe.product.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,14 +31,12 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestParam String name, @RequestParam String description, @RequestParam(required = false) MultipartFile image) {
-        Category category = categoryService
-                .createCategory(
-                        Category.builder()
-                                .name(name)
-                                .description(description)
-                                .imgUrl(image == null ? "liam.jpeg" : image.getOriginalFilename())
-                                .build());
+    public ResponseEntity<Category> createCategory(@RequestParam String name,
+                                                   @RequestParam String description,
+                                                   @RequestParam MultipartFile image) {
+        Category category = categoryService.createCategory(
+                CategoryRequest.builder().name(name).description(description).image(image).build()
+        );
         return new ResponseEntity<>(category, HttpStatus.CREATED);
     }
 
