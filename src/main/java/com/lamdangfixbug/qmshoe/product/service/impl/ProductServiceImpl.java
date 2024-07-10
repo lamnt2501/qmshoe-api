@@ -9,6 +9,9 @@ import com.lamdangfixbug.qmshoe.product.repository.BrandRepository;
 import com.lamdangfixbug.qmshoe.product.repository.CategoryRepository;
 import com.lamdangfixbug.qmshoe.product.repository.ProductRepository;
 import com.lamdangfixbug.qmshoe.product.service.ProductService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -65,6 +68,29 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> findAllProducts(Map<String, String> params) {
-        return productRepository.findAll();
+        Pageable pageable = buildPageable(params);
+        return productRepository.findAll(pageable).getContent();
+    }
+
+    private static Pageable buildPageable(Map<String,String> params){
+        int page = 0;
+        int limit = 20;
+        String sortBy = "createdAt";
+        Sort.Direction order = Sort.Direction.DESC;
+        if(params.containsKey("page")){
+            page = Math.max(Integer.parseInt(params.get("page"))-1,0);
+        }
+        if(params.containsKey("limit")){
+            limit = Math.max(Integer.parseInt(params.get("limit")),1);
+        }
+        if(params.containsKey("sort")){
+            sortBy = params.get("sort");
+            order = Sort.Direction.ASC;
+        }
+        if(params.containsKey("order")){
+            order = Sort.Direction.valueOf(params.get("order"));
+        }
+
+        return PageRequest.of(page,limit,Sort.by(order,sortBy));
     }
 }
