@@ -33,7 +33,15 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> getAllProducts(@RequestParam(required = false) Map<String, String> filters) {
+    public ResponseEntity<List<ProductResponse>> getAllProducts(@RequestParam(value = "color",required = false) List<String> colors,
+                                                                @RequestParam(value = "size",required = false) List<String> sizes,
+                                                                @RequestParam(required = false) Map<String, Object> filters) {
+        if(colors!=null){
+            filters.put("colors", colors);
+        }
+        if(sizes!=null){
+            filters.put("size", sizes);
+        }
         return new ResponseEntity<>(productService.findAllProducts(filters).stream().map(ProductResponse::from).toList(),HttpStatus.OK);
     }
 

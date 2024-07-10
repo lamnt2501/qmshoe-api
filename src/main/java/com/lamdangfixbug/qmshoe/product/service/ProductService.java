@@ -11,5 +11,5 @@ public interface ProductService {
     Product updateProduct(Product product);
     Product findProductById(Integer id);
     Product findProductBySlug(String slug);
-    List<Product> findAllProducts(Map<String, String> params);
+    List<Product> findAllProducts(Map<String, Object> params);
 }

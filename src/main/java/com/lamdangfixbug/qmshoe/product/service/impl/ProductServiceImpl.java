@@ -5,9 +5,7 @@ import com.lamdangfixbug.qmshoe.product.entity.Brand;
 import com.lamdangfixbug.qmshoe.product.entity.Category;
 import com.lamdangfixbug.qmshoe.product.entity.Product;
 import com.lamdangfixbug.qmshoe.product.payload.request.ProductRequest;
-import com.lamdangfixbug.qmshoe.product.repository.BrandRepository;
-import com.lamdangfixbug.qmshoe.product.repository.CategoryRepository;
-import com.lamdangfixbug.qmshoe.product.repository.ProductRepository;
+import com.lamdangfixbug.qmshoe.product.repository.*;
 import com.lamdangfixbug.qmshoe.product.service.ProductService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +21,15 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final BrandRepository brandRepository;
     private final CategoryRepository categoryRepository;
+    private final ColorRepository colorRepository;
+    private final SizeRepository sizeRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository, BrandRepository brandRepository, CategoryRepository categoryRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, BrandRepository brandRepository, CategoryRepository categoryRepository, ColorRepository colorRepository, SizeRepository sizeRepository) {
         this.productRepository = productRepository;
         this.brandRepository = brandRepository;
         this.categoryRepository = categoryRepository;
+        this.colorRepository = colorRepository;
+        this.sizeRepository = sizeRepository;
     }
 
     @Override
@@ -50,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product updateProduct(Product product) {
-        if(productRepository.existsById(product.getId())) {
+        if (productRepository.existsById(product.getId())) {
             return productRepository.save(product);
         }
         throw new ResourceNotFoundException("Couldn't find product with id: " + product.getId());
@@ -67,30 +69,38 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAllProducts(Map<String, String> params) {
+    public List<Product> findAllProducts(Map<String, Object> params) {
+        System.out.println(params);
         Pageable pageable = buildPageable(params);
-        return productRepository.findAll(pageable).getContent();
+        List<Integer> colors = params.get("colors") != null ? List.class.cast(params.get("colors")) : colorRepository.getAllIds();
+        List<Integer> sizes = params.get("sizes") != null ? List.class.cast(params.get("sizes")) : sizeRepository.getAllIds();
+        int categoryId = params.get("category") != null ? Integer.parseInt((String) params.get("category")) : 1;
+        double minPrice = params.get("minPrice") != null ? Double.parseDouble((String) params.get("minPrice")) : 0;
+        double maxPrice = params.get("maxPrice") != null ? Double.parseDouble((String) params.get("maxPrice")) : 200000;
+        return productRepository
+                .getFilteredProduct(categoryId,minPrice, maxPrice, colors, sizes, pageable);
     }
 
-    private static Pageable buildPageable(Map<String,String> params){
+
+    private static Pageable buildPageable(Map<String, Object> params) {
         int page = 0;
         int limit = 20;
-        String sortBy = "createdAt";
+        String sortBy = "created_at";
         Sort.Direction order = Sort.Direction.DESC;
-        if(params.containsKey("page")){
-            page = Math.max(Integer.parseInt(params.get("page"))-1,0);
+        if (params.containsKey("page")) {
+            page = Math.max(Integer.parseInt((String) params.get("page")) - 1, 0);
         }
-        if(params.containsKey("limit")){
-            limit = Math.max(Integer.parseInt(params.get("limit")),1);
+        if (params.containsKey("limit")) {
+            limit = Math.max(Integer.parseInt((String) params.get("limit")), 1);
         }
-        if(params.containsKey("sort")){
-            sortBy = params.get("sort");
+        if (params.containsKey("sort")) {
+            sortBy = (String) params.get("sort");
             order = Sort.Direction.ASC;
         }
-        if(params.containsKey("order")){
-            order = Sort.Direction.valueOf(params.get("order"));
+        if (params.containsKey("order")) {
+            order = Sort.Direction.valueOf((String) params.get("order"));
         }
 
-        return PageRequest.of(page,limit,Sort.by(order,sortBy));
+        return PageRequest.of(page, limit, Sort.by(order, sortBy));
     }
 }
