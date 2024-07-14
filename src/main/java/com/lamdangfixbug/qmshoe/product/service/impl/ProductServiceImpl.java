@@ -70,8 +70,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> findAllProducts(Map<String, Object> params) {
-        System.out.println(params);
         Pageable pageable = buildPageable(params);
+        if(params.isEmpty()) return productRepository.findAll(pageable).getContent();
         List<Integer> colors = params.get("colors") != null ? List.class.cast(params.get("colors")) : colorRepository.getAllIds();
         List<Integer> sizes = params.get("sizes") != null ? List.class.cast(params.get("sizes")) : sizeRepository.getAllIds();
         int categoryId = params.get("category") != null ? Integer.parseInt((String) params.get("category")) : 1;
