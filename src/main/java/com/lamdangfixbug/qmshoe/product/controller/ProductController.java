@@ -9,11 +9,13 @@ import com.lamdangfixbug.qmshoe.product.payload.response.ProductOptionResponse;
 import com.lamdangfixbug.qmshoe.product.payload.response.ProductResponse;
 import com.lamdangfixbug.qmshoe.product.service.ProductOptionService;
 import com.lamdangfixbug.qmshoe.product.service.ProductService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Console;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +37,9 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getAllProducts(@RequestParam(value = "color",required = false) List<String> colors,
                                                                 @RequestParam(value = "size",required = false) List<String> sizes,
-                                                                @RequestParam(required = false) Map<String, Object> filters) {
+                                                                @RequestParam(required = false) Map<String, Object> filters,
+    HttpSession session) {
+        System.out.println(session.getId());
         if(colors!=null){
             filters.put("colors", colors);
         }

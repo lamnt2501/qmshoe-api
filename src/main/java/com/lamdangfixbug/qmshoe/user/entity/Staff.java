@@ -12,13 +12,13 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "customers")
+@Table(name = "staffs")
 @Builder
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Customer implements UserDetails {
+public class Staff implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -32,6 +32,8 @@ public class Customer implements UserDetails {
     private String phoneNumber;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @PrePersist
     protected void onCreate() {
@@ -46,7 +48,7 @@ public class Customer implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
