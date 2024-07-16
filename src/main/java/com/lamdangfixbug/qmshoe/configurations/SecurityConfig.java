@@ -25,8 +25,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
+
     private final String[] WHITE_LIST_URL = {
-            "/api/v1/auth/**",
             "api/v1/products",
             "api/v1/brands",
             "api/v1/colors",
@@ -45,9 +46,12 @@ public class SecurityConfig {
             "/swagger-ui/**",
     };
 
-    public SecurityConfig(UserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(UserDetailsService userDetailsService,
+                          JwtAuthenticationFilter jwtAuthenticationFilter,
+                        @Qualifier("customAuthenticationEntryPoint") AuthenticationEntryPoint authenticationEntryPoint) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.authenticationEntryPoint = authenticationEntryPoint;
     }
 
     @Bean
@@ -55,13 +59,14 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         req -> req.requestMatchers(HttpMethod.GET,WHITE_LIST_URL).permitAll()
+                                .requestMatchers(HttpMethod.POST,"/api/v1/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/v1/products/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(Customizer.withDefaults());
+                .exceptionHandling(e->e.authenticationEntryPoint(authenticationEntryPoint));
         return http.build();
     }
 

@@ -1,6 +1,8 @@
 package com.lamdangfixbug.qmshoe.exceptions;
 
-public class EmailAlreadyExistException extends RuntimeException {
+import org.springframework.security.core.AuthenticationException;
+
+public class EmailAlreadyExistException extends AuthenticationException {
     public EmailAlreadyExistException() {
         super("Email already exist");
     }
