@@ -40,7 +40,7 @@ public class ProductController {
             filters.put("colors", colors);
         }
         if(sizes!=null){
-            filters.put("size", sizes);
+            filters.put("sizes", sizes);
         }
         return new ResponseEntity<>(productService.findAllProducts(filters).stream().map(ProductResponse::from).toList(),HttpStatus.OK);
     }

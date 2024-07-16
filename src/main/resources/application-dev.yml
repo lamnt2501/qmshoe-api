@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/qmshoes
+    url: jdbc:mysql://localhost:3306/qmshoes?createDatabaseIfNotExist=true
     username: ASUSVivoBook
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -11,4 +11,4 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
+        dialect: org.hibernate.dialect.MySQLDialect

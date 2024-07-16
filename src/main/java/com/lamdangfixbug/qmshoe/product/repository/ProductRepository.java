@@ -29,4 +29,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
                                      @Param("colors") Collection<Integer> colors,
                                      @Param("sizes") Collection<Integer> sizes,
                                      Pageable pageable);
+
+    @Query(value = "select  p.* from products as p",nativeQuery = true)
+    List<Product> getAllProduct(Pageable pageable);
 }

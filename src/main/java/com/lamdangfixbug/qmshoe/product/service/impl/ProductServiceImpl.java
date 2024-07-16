@@ -71,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> findAllProducts(Map<String, Object> params) {
         Pageable pageable = buildPageable(params);
-        if(params.isEmpty()) return productRepository.findAll(pageable).getContent();
+        if(params.isEmpty()) return productRepository.getAllProduct(pageable);
         List<Integer> colors = params.get("colors") != null ? List.class.cast(params.get("colors")) : colorRepository.getAllIds();
         List<Integer> sizes = params.get("sizes") != null ? List.class.cast(params.get("sizes")) : sizeRepository.getAllIds();
         int categoryId = params.get("category") != null ? Integer.parseInt((String) params.get("category")) : 1;
@@ -85,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
     private static Pageable buildPageable(Map<String, Object> params) {
         int page = 0;
         int limit = 20;
-        String sortBy = "created_at";
+        String sortBy = "created_At";
         Sort.Direction order = Sort.Direction.DESC;
         if (params.containsKey("page")) {
             page = Math.max(Integer.parseInt((String) params.get("page")) - 1, 0);
