@@ -4,6 +4,7 @@ import com.lamdangfixbug.qmshoe.auth.service.JwtService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.NonNull;
@@ -34,12 +35,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        Cookie[] cookies = request.getCookies();
+        Cookie authCookie = null;
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("_authTK")) {
+                authCookie = cookie;
+                break;
+            }
+        }
+        if ((authHeader == null || !authHeader.startsWith("Bearer ")) && authCookie == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.substring(7);
+        String token = null;
+        if(authHeader!= null ) {
+            authHeader.substring(7);
+        }
+        else {
+            token = authCookie.getValue();
+        }
         String email = jwtService.extractClaims(token, Claims::getSubject);
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
