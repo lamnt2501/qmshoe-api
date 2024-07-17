@@ -1,9 +1,11 @@
 package com.lamdangfixbug.qmshoe.order.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.lamdangfixbug.qmshoe.user.entity.Address;
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,9 +35,15 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    @ManyToOne
+    @JoinColumn(name = "address_id",referencedColumnName = "id")
+    private Address address;
+
     @OneToMany(mappedBy = "id.orderId",cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<OrderItem> orderItems;
+
+    @OneToMany(mappedBy = "orderId")
+    private List<OrderStatusTracking> orderStatusTracking;
 
     @PrePersist
     protected void onCreate() {
@@ -46,5 +54,6 @@ public class Order {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+
     }
 }

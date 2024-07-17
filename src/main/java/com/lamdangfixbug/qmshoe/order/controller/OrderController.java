@@ -37,7 +37,8 @@ public class OrderController {
     public ResponseEntity<OrderResponse> createOrder(@RequestBody String order) throws IOException {
         OrderRequest orderRequest = new OrderRequest();
         ObjectMapper mapper = new ObjectMapper();
-        orderRequest.setItems(mapper.readValue(order, OrderItemRequest[].class));
+//        orderRequest.setItems(mapper.readValue(order, OrderItemRequest[].class));
+        orderRequest = mapper.readValue(order, OrderRequest.class);
         return new ResponseEntity<>(OrderResponse.from(orderService.placeOrder(orderRequest)), HttpStatus.CREATED);
     }
 

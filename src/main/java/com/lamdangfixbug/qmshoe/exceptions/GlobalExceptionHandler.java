@@ -3,6 +3,7 @@ package com.lamdangfixbug.qmshoe.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -40,6 +41,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         }
         if(ex instanceof InsufficientInventoryException){
             return new ResponseEntity<>(ErrorDetails.builder().message(ex.getMessage()).statusCode(400).build(), HttpStatus.BAD_REQUEST);
+        }
+        if(ex instanceof InsufficientAuthenticationException){
+            return new ResponseEntity<>(ErrorDetails.builder().message("You don't have permission to perform this action").statusCode(403).build(), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(ErrorDetails.builder().message("Bad request").statusCode(400).build(), HttpStatus.BAD_REQUEST);
     }

@@ -1,5 +1,6 @@
 package com.lamdangfixbug.qmshoe.order.payload.request;
 
+import com.lamdangfixbug.qmshoe.user.entity.Address;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,5 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderRequest {
+    private String voucher;
     private OrderItemRequest[] items;
+    private AddressRequest address;
 }

@@ -41,7 +41,7 @@ public class JwtService {
         return Jwts.builder()
                 .subject(user.getUsername())
                 .issuedAt(new Date())
-                .expiration(new Date(new Date().getTime() + 1000 * 60 * 15))
+                .expiration(new Date(new Date().getTime() + 1000 * 60 * 60))
                 .signWith(getSignKey())
                 .compact();
     }

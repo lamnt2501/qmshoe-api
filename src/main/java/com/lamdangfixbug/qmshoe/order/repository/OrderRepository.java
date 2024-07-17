@@ -20,4 +20,5 @@ public interface OrderRepository extends JpaRepository<Order,Integer> {
     Page<Order> findAll(@NotNull Pageable pageable);
 
     Optional<Order> findByIdAndCustomer_Id(int id,int customerId);
+
 }
