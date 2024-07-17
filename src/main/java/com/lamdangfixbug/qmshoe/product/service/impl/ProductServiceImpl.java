@@ -7,6 +7,7 @@ import com.lamdangfixbug.qmshoe.product.entity.Product;
 import com.lamdangfixbug.qmshoe.product.payload.request.ProductRequest;
 import com.lamdangfixbug.qmshoe.product.repository.*;
 import com.lamdangfixbug.qmshoe.product.service.ProductService;
+import com.lamdangfixbug.qmshoe.utils.Utils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -70,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> findAllProducts(Map<String, Object> params) {
-        Pageable pageable = buildPageable(params);
+        Pageable pageable = Utils.buildPageable(params);
         if(params.isEmpty()) return productRepository.getAllProduct(pageable);
         List<Integer> colors = params.get("colors") != null ? List.class.cast(params.get("colors")) : colorRepository.getAllIds();
         List<Integer> sizes = params.get("sizes") != null ? List.class.cast(params.get("sizes")) : sizeRepository.getAllIds();
@@ -82,25 +83,5 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-    private static Pageable buildPageable(Map<String, Object> params) {
-        int page = 0;
-        int limit = 20;
-        String sortBy = "created_At";
-        Sort.Direction order = Sort.Direction.DESC;
-        if (params.containsKey("page")) {
-            page = Math.max(Integer.parseInt((String) params.get("page")) - 1, 0);
-        }
-        if (params.containsKey("limit")) {
-            limit = Math.max(Integer.parseInt((String) params.get("limit")), 1);
-        }
-        if (params.containsKey("sort")) {
-            sortBy = (String) params.get("sort");
-            order = Sort.Direction.ASC;
-        }
-        if (params.containsKey("order")) {
-            order = Sort.Direction.valueOf((String) params.get("order"));
-        }
 
-        return PageRequest.of(page, limit, Sort.by(order, sortBy));
-    }
 }

@@ -19,20 +19,21 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
+    @ManyToOne
+    @JoinColumn(name = "customer_id",referencedColumnName = "id")
+    private Customer customer;
+    private double total;
     @Column(updatable = false)
     private LocalDateTime createdAt;
     @Column(insertable = false)
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id",referencedColumnName = "id")
-    private Customer customer;
+
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    @OneToMany(mappedBy = "id.order")
+    @OneToMany(mappedBy = "id.orderId",cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<OrderItem> orderItems;
 

@@ -6,21 +6,17 @@ import com.lamdangfixbug.qmshoe.product.entity.ProductOption;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Setter
 @Getter
 @Embeddable
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderItemPK implements Serializable {
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    @JsonBackReference
-    private Order order;
-
-    @ManyToOne
-    @JoinColumn(name = "product_option_id")
-    private ProductOption option;
+    private int orderId;
+    private String sku;
 }

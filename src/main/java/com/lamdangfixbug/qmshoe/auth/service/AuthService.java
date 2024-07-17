@@ -55,7 +55,6 @@ public class AuthService {
                         req.getEmail(), req.getPassword()
                 )
         );
-        System.out.println(a);
         String token = jwtService.generateToken(userDetailsService.loadUserByUsername(req.getEmail()));
         AuthenticationResponse response = new AuthenticationResponse();
         response.setToken(token);

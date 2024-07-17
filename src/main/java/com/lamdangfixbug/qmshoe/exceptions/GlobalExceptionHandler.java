@@ -38,6 +38,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         if(ex instanceof EmailAlreadyExistException){
             return new ResponseEntity<>(ErrorDetails.builder().message("Email already exist").statusCode(400).build(), HttpStatus.BAD_REQUEST);
         }
+        if(ex instanceof InsufficientInventoryException){
+            return new ResponseEntity<>(ErrorDetails.builder().message(ex.getMessage()).statusCode(400).build(), HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(ErrorDetails.builder().message("Bad request").statusCode(400).build(), HttpStatus.BAD_REQUEST);
     }
 
