@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = null;
         if (authHeader != null) {
-            authHeader.substring(7);
+            token = authHeader.substring(7);
         } else {
             token = authCookie.getValue();
         }
