@@ -28,11 +28,11 @@ public class SecurityConfig {
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
     private final String[] WHITE_LIST_URL = {
-            "api/v1/products",
-            "api/v1/brands",
-            "api/v1/colors",
-            "api/v1/categories",
-            "api/v1/sizes",
+            "api/v1/products/**",
+            "api/v1/brands/**",
+            "api/v1/colors/**",
+            "api/v1/categories/**",
+            "api/v1/sizes/**",
             //------
             "/v2/api-docs",
             "/v3/api-docs",

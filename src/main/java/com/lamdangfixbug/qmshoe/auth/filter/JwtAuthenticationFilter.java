@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         Cookie[] cookies = request.getCookies();
         Cookie authCookie = null;
-        if(cookies!=null) {
+        if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("_authTK")) {
                     authCookie = cookie;
@@ -51,10 +51,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = null;
-        if(authHeader!= null ) {
+        if (authHeader != null) {
             authHeader.substring(7);
-        }
-        else {
+        } else {
             token = authCookie.getValue();
         }
         String email = jwtService.extractClaims(token, Claims::getSubject);
