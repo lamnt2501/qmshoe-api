@@ -2,8 +2,10 @@ package com.lamdangfixbug.qmshoe.product.service.impl;
 
 import com.lamdangfixbug.qmshoe.exceptions.ResourceNotFoundException;
 import com.lamdangfixbug.qmshoe.product.entity.Brand;
+import com.lamdangfixbug.qmshoe.product.payload.request.BrandRequest;
 import com.lamdangfixbug.qmshoe.product.repository.BrandRepository;
 import com.lamdangfixbug.qmshoe.product.service.BrandService;
+import com.lamdangfixbug.qmshoe.product.service.FileUploadService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,13 +13,18 @@ import java.util.List;
 @Service
 public class BrandServiceImpl implements BrandService {
     private final BrandRepository brandRepository;
-
-    public BrandServiceImpl(BrandRepository brandRepository) {
+private  final FileUploadService fileUploadService;
+    public BrandServiceImpl(BrandRepository brandRepository, FileUploadService fileUploadService) {
         this.brandRepository = brandRepository;
+        this.fileUploadService = fileUploadService;
     }
 
     @Override
-    public Brand createBrand(Brand brand) {
+    public Brand createBrand(BrandRequest brandRequest) {
+        Brand brand = new Brand();
+        brand.setName(brandRequest.getName());
+        brand.setDescription(brandRequest.getDescription());
+        brand.setImgUrl((String)fileUploadService.uploadImage(brandRequest.getImage()).get("url"));
         return brandRepository.save(brand);
     }
 

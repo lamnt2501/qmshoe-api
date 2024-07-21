@@ -1,11 +1,13 @@
 package com.lamdangfixbug.qmshoe.product.controller;
 
 import com.lamdangfixbug.qmshoe.product.entity.Brand;
+import com.lamdangfixbug.qmshoe.product.payload.request.BrandRequest;
 import com.lamdangfixbug.qmshoe.product.repository.BrandRepository;
 import com.lamdangfixbug.qmshoe.product.service.BrandService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -29,7 +31,9 @@ public class BrandController {
     }
 
     @PostMapping
-    public ResponseEntity<Brand> createBrand(@RequestBody Brand brand) {
-        return new ResponseEntity<>(brandService.createBrand(brand), HttpStatus.CREATED);
+    public ResponseEntity<Brand> createBrand(@RequestParam String name,
+                                             @RequestParam String description,
+                                             MultipartFile image) {
+        return new ResponseEntity<>(brandService.createBrand(BrandRequest.builder().name(name).description(description).image(image).build()), HttpStatus.CREATED);
     }
 }

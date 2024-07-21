@@ -13,8 +13,9 @@ import lombok.*;
 public class Brand {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    private Integer id;
     @Column(nullable = false,unique = true)
-    public String name;
-    public String description;
+    private String name;
+    private String description;
+    private String imgUrl;
 }
