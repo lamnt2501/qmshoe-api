@@ -52,9 +52,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleEmailAlreadyExistException(EmailAlreadyExistException ex, WebRequest request) {
         return new ResponseEntity<>(ErrorDetails.builder().message("Email already exist").statusCode(400).build(), HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(InsufficientInventoryException.class)
-    public ResponseEntity<Object> handleInsufficientInventoryException(InsufficientInventoryException ex, WebRequest request) {
+
+    @ExceptionHandler({InsufficientInventoryException.class})
+    public ResponseEntity<Object> handleInsufficientInventoryException(InsufficientAuthenticationException ex, WebRequest request) {
         return new ResponseEntity<>(ErrorDetails.builder().message(ex.getMessage()).statusCode(400).build(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(PasswordDidNotMatchException.class)
+    public ResponseEntity<Object> handlePasswordDidNotMatchException(PasswordDidNotMatchException ex, WebRequest request) {
+        return new ResponseEntity<>(ErrorDetails.builder().message(ex.getMessage()).statusCode(400).build(), HttpStatus.BAD_REQUEST);
+    }
 }
