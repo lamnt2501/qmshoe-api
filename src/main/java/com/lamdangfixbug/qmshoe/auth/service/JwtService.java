@@ -1,5 +1,7 @@
 package com.lamdangfixbug.qmshoe.auth.service;
 
+import com.lamdangfixbug.qmshoe.user.entity.Token;
+import com.lamdangfixbug.qmshoe.user.repository.TokenRepository;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,9 +17,11 @@ import java.util.function.Function;
 @Service
 public class JwtService {
     private final String JWT_SECRET;
+    private final TokenRepository tokenRepository;
 
-    public JwtService(Dotenv dotenv) {
+    public JwtService(Dotenv dotenv, TokenRepository tokenRepository) {
         JWT_SECRET = dotenv.get("JWT_SECRET");
+        this.tokenRepository = tokenRepository;
     }
 
     public Claims extractAllClaims(String token) {
@@ -33,8 +37,10 @@ public class JwtService {
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
+        Token t = tokenRepository.findByToken(token).orElse(null);
         if(!extractClaims(token, Claims::getSubject).equals(userDetails.getUsername())) return false;
-        return !extractClaims(token,Claims::getExpiration).before(new Date());
+        if(t==null) return false;
+        return !extractClaims(token,Claims::getExpiration).before(new Date()) && !t.isRevoke();
     }
 
     public String generateToken(UserDetails user) {

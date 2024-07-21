@@ -7,9 +7,14 @@ import com.lamdangfixbug.qmshoe.cart.entity.Cart;
 import com.lamdangfixbug.qmshoe.cart.repository.CartRepository;
 import com.lamdangfixbug.qmshoe.exceptions.EmailAlreadyExistException;
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
+import com.lamdangfixbug.qmshoe.user.entity.Staff;
+import com.lamdangfixbug.qmshoe.user.entity.Token;
 import com.lamdangfixbug.qmshoe.user.repository.CustomerRepository;
+import com.lamdangfixbug.qmshoe.user.repository.TokenRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,18 +27,20 @@ public class AuthService {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final CartRepository cartRepository;
+    private final TokenRepository tokenRepository;
 
     public AuthService(CustomerRepository customerRepository,
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
                        JwtService jwtService,
-                       UserDetailsService userDetailsService, CartRepository cartRepository) {
+                       UserDetailsService userDetailsService, CartRepository cartRepository, TokenRepository tokenRepository) {
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
         this.cartRepository = cartRepository;
+        this.tokenRepository = tokenRepository;
     }
 
     public AuthenticationResponse register(RegisterRequest req) {
@@ -49,6 +56,7 @@ public class AuthService {
         customerRepository.save(customer);
         cartRepository.save(Cart.builder().customerId(customer.getId()).build());
         String token = jwtService.generateToken(customer);
+        saveToken(customer,token);
         AuthenticationResponse response = new AuthenticationResponse();
         response.setToken(token);
         return response;
@@ -60,9 +68,38 @@ public class AuthService {
                         req.getEmail(), req.getPassword()
                 )
         );
-        String token = jwtService.generateToken(userDetailsService.loadUserByUsername(req.getEmail()));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(req.getEmail());
+        String token = jwtService.generateToken(userDetails);
+        revokeAllToken(userDetails);
+        saveToken(userDetails, token);
         AuthenticationResponse response = new AuthenticationResponse();
         response.setToken(token);
         return response;
+    }
+
+    public void saveToken(UserDetails userDetails, String token) {
+        Token t = Token.builder()
+                .token(token)
+                .isRevoke(false)
+                .build();
+        if (userDetails instanceof Customer) {
+            t.setBelongToUser("c" + ((Customer) userDetails).getId());
+        }else{
+            t.setBelongToUser("s" + ((Staff)userDetails).getId());
+        }
+        tokenRepository.save(t);
+    }
+
+    public void revokeAllToken(UserDetails userDetails) {
+        String belongToUser = "";
+        if(userDetails instanceof Customer){
+            belongToUser = "c" + ((Customer) userDetails).getId();
+        }else{
+            belongToUser = "s" + ((Staff)userDetails).getId();
+        }
+        for(Token token : tokenRepository.findAllValidTokenByUser(belongToUser)){
+            token.setRevoke(true);
+            tokenRepository.save(token);
+        };
     }
 }
