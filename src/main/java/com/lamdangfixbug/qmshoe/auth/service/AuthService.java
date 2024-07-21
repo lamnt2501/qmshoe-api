@@ -3,6 +3,8 @@ package com.lamdangfixbug.qmshoe.auth.service;
 import com.lamdangfixbug.qmshoe.auth.payload.request.LoginRequest;
 import com.lamdangfixbug.qmshoe.auth.payload.request.RegisterRequest;
 import com.lamdangfixbug.qmshoe.auth.payload.response.AuthenticationResponse;
+import com.lamdangfixbug.qmshoe.cart.entity.Cart;
+import com.lamdangfixbug.qmshoe.cart.repository.CartRepository;
 import com.lamdangfixbug.qmshoe.exceptions.EmailAlreadyExistException;
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
 import com.lamdangfixbug.qmshoe.user.repository.CustomerRepository;
@@ -19,17 +21,19 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final CartRepository cartRepository;
 
     public AuthService(CustomerRepository customerRepository,
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
                        JwtService jwtService,
-                       UserDetailsService userDetailsService) {
+                       UserDetailsService userDetailsService, CartRepository cartRepository) {
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.cartRepository = cartRepository;
     }
 
     public AuthenticationResponse register(RegisterRequest req) {
@@ -43,6 +47,7 @@ public class AuthService {
                 .password(passwordEncoder.encode(req.getPassword()))
                 .build();
         customerRepository.save(customer);
+        cartRepository.save(Cart.builder().customerId(customer.getId()).build());
         String token = jwtService.generateToken(customer);
         AuthenticationResponse response = new AuthenticationResponse();
         response.setToken(token);

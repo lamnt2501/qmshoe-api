@@ -24,30 +24,30 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest registerRequest,
-    HttpServletResponse response) {
+                                                           HttpServletResponse response) {
         AuthenticationResponse authenticationResponse = authService.register(registerRequest);
-        ResponseCookie cookie = ResponseCookie.from("_authTK",authenticationResponse.getToken())
-                .httpOnly(true)
-                .secure(false)
-                .maxAge(60*60)
-                .path("/api/v1")
-                .sameSite("Lax")
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE,cookie.toString());
+//        ResponseCookie cookie = ResponseCookie.from("_authTK",authenticationResponse.getToken())
+//                .httpOnly(true)
+//                .secure(false)
+//                .maxAge(60*60)
+//                .path("/api/v1")
+//                .sameSite("Lax")
+//                .build();
+//        response.addHeader(HttpHeaders.SET_COOKIE,cookie.toString());
         return ResponseEntity.ok(authenticationResponse);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest loginRequest,HttpServletResponse response) {
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         AuthenticationResponse authenticationResponse = authService.login(loginRequest);
-        ResponseCookie cookie = ResponseCookie.from("_authTK",authenticationResponse.getToken())
-                .httpOnly(true)
-                .secure(false)
-                .maxAge(60*60)
-                .path("/api/v1")
-                .sameSite("Lax")
-                .build();
-        response.addHeader(HttpHeaders.SET_COOKIE,cookie.toString());
+//        ResponseCookie cookie = ResponseCookie.from("_authTK",authenticationResponse.getToken())
+//                .httpOnly(true)
+//                .secure(false)
+//                .maxAge(60*60)
+//                .path("/api/v1")
+//                .sameSite("Lax")
+//                .build();
+//        response.addHeader(HttpHeaders.SET_COOKIE,cookie.toString());
         return ResponseEntity.ok(authenticationResponse);
     }
 }

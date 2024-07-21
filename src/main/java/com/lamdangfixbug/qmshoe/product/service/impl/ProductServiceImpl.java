@@ -81,7 +81,4 @@ public class ProductServiceImpl implements ProductService {
         return productRepository
                 .getFilteredProduct(categoryId,minPrice, maxPrice, colors, sizes, pageable);
     }
-
-
-
 }
