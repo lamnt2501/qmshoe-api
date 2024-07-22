@@ -11,6 +11,7 @@ import com.lamdangfixbug.qmshoe.user.entity.Staff;
 import com.lamdangfixbug.qmshoe.user.entity.Token;
 import com.lamdangfixbug.qmshoe.user.repository.CustomerRepository;
 import com.lamdangfixbug.qmshoe.user.repository.TokenRepository;
+import com.lamdangfixbug.qmshoe.utils.EmailService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
@@ -28,12 +29,13 @@ public class AuthService {
     private final UserDetailsService userDetailsService;
     private final CartRepository cartRepository;
     private final TokenRepository tokenRepository;
+    private final EmailService emailService;
 
     public AuthService(CustomerRepository customerRepository,
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
                        JwtService jwtService,
-                       UserDetailsService userDetailsService, CartRepository cartRepository, TokenRepository tokenRepository) {
+                       UserDetailsService userDetailsService, CartRepository cartRepository, TokenRepository tokenRepository, EmailService emailService) {
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -41,6 +43,7 @@ public class AuthService {
         this.userDetailsService = userDetailsService;
         this.cartRepository = cartRepository;
         this.tokenRepository = tokenRepository;
+        this.emailService = emailService;
     }
 
     public AuthenticationResponse register(RegisterRequest req) {
@@ -53,10 +56,14 @@ public class AuthService {
                 .email(req.getEmail())
                 .password(passwordEncoder.encode(req.getPassword()))
                 .build();
+
         customerRepository.save(customer);
         cartRepository.save(Cart.builder().customerId(customer.getId()).build());
         String token = jwtService.generateToken(customer);
         saveToken(customer,token);
+//        String[] customerName = customer.getName().split(" ");
+//        emailService.sendWelcomeEmail(customer.getEmail(),customerName[customerName.length-1]);
+
         AuthenticationResponse response = new AuthenticationResponse();
         response.setToken(token);
         return response;
