@@ -25,11 +25,9 @@ import java.util.Map;
 @RequestMapping("/api/v1/products")
 public class ProductController {
     private final ProductService productService;
-    private final ProductOptionService productOptionService;
 
     public ProductController(ProductService productService, ProductOptionService productOptionService) {
         this.productService = productService;
-        this.productOptionService = productOptionService;
     }
 
     @GetMapping("/{slug}")
@@ -50,29 +48,5 @@ public class ProductController {
         return new ResponseEntity<>(productService.findAllProducts(filters).stream().map(ProductResponse::from).toList(), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest productRequest) {
-        return new ResponseEntity<>(ProductResponse.from(productService.createProduct(productRequest)), HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        return new ResponseEntity<>(ProductResponse.from(productService.updateProduct(product)), HttpStatus.OK);
-    }
-
-    //--------------
-    @PostMapping(value = "/variants")
-    public ResponseEntity<ProductOptionResponse> createProductOption(@RequestParam("productOption") String productOptionRequestStr, @RequestParam MultipartFile[] images) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        ProductOptionRequest productOptionRequest = null;
-        try {
-            productOptionRequest = objectMapper.readValue(productOptionRequestStr, ProductOptionRequest.class);
-            productOptionRequest.setImages(images);
-        } catch (Exception e) {
-            throw new RuntimeException("Could not parse product option request!");
-        }
-
-        return new ResponseEntity<>(ProductOptionResponse.from(productOptionService.createProductOption(productOptionRequest)), HttpStatus.CREATED);
-    }
 
 }

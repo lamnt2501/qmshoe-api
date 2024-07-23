@@ -30,15 +30,4 @@ public class CategoryController {
         return new ResponseEntity<>(categoryService.findCategoryBySlug(slug), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestParam String name,
-                                                   @RequestParam String description,
-                                                   @RequestParam MultipartFile image) {
-        Category category = categoryService.createCategory(
-                CategoryRequest.builder().name(name).description(description).image(image).build()
-        );
-        return new ResponseEntity<>(category, HttpStatus.CREATED);
-    }
-
-
 }

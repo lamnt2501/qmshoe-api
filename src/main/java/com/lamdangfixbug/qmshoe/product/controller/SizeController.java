@@ -23,9 +23,4 @@ public class SizeController {
     }
 
 
-    @PostMapping
-    public ResponseEntity<Size> createSize(@RequestBody Size size) {
-        return new ResponseEntity<>(sizeService.createSize(size), HttpStatus.CREATED);
-    }
-
 }

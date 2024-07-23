@@ -2,6 +2,7 @@ package com.lamdangfixbug.qmshoe.order.service.impl;
 
 import com.lamdangfixbug.qmshoe.exceptions.InsufficientInventoryException;
 import com.lamdangfixbug.qmshoe.exceptions.ResourceNotFoundException;
+import com.lamdangfixbug.qmshoe.exceptions.UpdateOrderException;
 import com.lamdangfixbug.qmshoe.order.entity.Order;
 import com.lamdangfixbug.qmshoe.order.entity.OrderItem;
 import com.lamdangfixbug.qmshoe.order.entity.OrderStatus;
@@ -20,8 +21,6 @@ import com.lamdangfixbug.qmshoe.user.entity.Customer;
 import com.lamdangfixbug.qmshoe.user.repository.AddressRepository;
 import com.lamdangfixbug.qmshoe.utils.Utils;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -49,19 +48,13 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> getAllOrders(Map<String, Object> params) {
         Pageable pageable = Utils.buildPageable(params);
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (userDetails.getAuthorities().isEmpty()) {
-            return orderRepository.findByCustomer(((Customer) userDetails).getId(), pageable).getContent();
-        }
-        return orderRepository.findAll(pageable).getContent();
+        return orderRepository.findByCustomer(((Customer) userDetails).getId(), pageable).getContent();
     }
 
     @Override
     public Order getOrder(int orderId) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (userDetails.getAuthorities().isEmpty()) {
-            return orderRepository.findByIdAndCustomer_Id(orderId, ((Customer) userDetails).getId()).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        }
-        return orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Could not find order with id " + orderId));
+        return orderRepository.findByIdAndCustomer_Id(orderId, ((Customer) userDetails).getId()).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
     }
 
     @Override
@@ -129,27 +122,54 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Order updateOrder(UpdateOrderStatusRequest request) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Order order;
-        if (userDetails.getAuthorities().isEmpty()) {
-            order = orderRepository.findByIdAndCustomer_Id(request.getId(), ((Customer) userDetails).getId()).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        } else {
-            order = orderRepository.findById(request.getId()).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        Customer customer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Order order = orderRepository.findByIdAndCustomer_Id(request.getId(),  customer.getId()).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        if (request.getStatus() != OrderStatus.CANCEL || order.getStatus().getPriority() > 0 ) {
+            throw new UpdateOrderException("Invalid order status");
+        } else if (request.getMessage() == null || request.getMessage().isEmpty()) {
+            throw new UpdateOrderException("You must state the reason for canceling order!");
         }
 
-        if (userDetails.getAuthorities().isEmpty()) {
-            if (request.getStatus() != OrderStatus.CANCEL || order.getStatus().getPriority() > OrderStatus.WAITING.getPriority()) {
-                throw new AccessDeniedException("You don't have permission to update this order");
-            }
+        for (OrderItem oi : order.getOrderItems()) {
+            ProductOption productOption = productOptionRepository.findBySku(oi.getId().getSku()).orElseThrow(() -> new ResourceNotFoundException("Product option not found"));
+            productOption.setQuantity(productOption.getQuantity() + oi.getQuantity());
+            productOptionRepository.save(productOption);
         }
+
+        order.setStatus(OrderStatus.CANCEL);
+        String message = request.getMessage();
+        orderStatusTrackingRepository.save(OrderStatusTracking.builder()
+                .orderId(order.getId())
+                .message(message)
+                .status(request.getStatus())
+                .build());
+
+        return orderRepository.save(order);
+    }
+
+    @Override
+    public List<Order> getAllOrdersAdmin(Map<String, Object> params) {
+        Pageable pageable = Utils.buildPageable(params);
+        return orderRepository.findAll(pageable).getContent();
+    }
+
+    @Override
+    public Order getOrderAdmin(int orderId) {
+        return orderRepository.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Could not find order with id " + orderId));
+    }
+
+    @Override
+    public Order updateOrderAdmin(UpdateOrderStatusRequest request) {
+        Order order = orderRepository.findById(request.getId()).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         if (request.getStatus().getPriority() <= order.getStatus().getPriority()) {
-            throw new IllegalArgumentException("Invalid order status");
+            throw new UpdateOrderException("Invalid order status");
         }
 
         if (request.getStatus() == OrderStatus.CANCEL) {
-            if (request.getMessage() == null) {
-                throw new RuntimeException("You must state the reason for canceling order!");
+            if (request.getMessage() == null || request.getMessage().isEmpty()) {
+                throw new UpdateOrderException("You must state the reason for canceling order!");
             }
             for (OrderItem oi : order.getOrderItems()) {
                 ProductOption productOption = productOptionRepository.findBySku(oi.getId().getSku()).orElseThrow(() -> new ResourceNotFoundException("Product option not found"));
@@ -169,11 +189,13 @@ public class OrderServiceImpl implements OrderService {
                 default -> "";
             };
         }
+
         orderStatusTrackingRepository.save(OrderStatusTracking.builder()
                 .orderId(order.getId())
                 .message(message)
                 .status(request.getStatus())
                 .build());
+
         return orderRepository.save(order);
     }
 }

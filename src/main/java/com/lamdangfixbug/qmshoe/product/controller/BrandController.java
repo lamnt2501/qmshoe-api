@@ -30,10 +30,5 @@ public class BrandController {
         return ResponseEntity.ok(brandService.getBrandById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<Brand> createBrand(@RequestParam String name,
-                                             @RequestParam String description,
-                                             MultipartFile image) {
-        return new ResponseEntity<>(brandService.createBrand(BrandRequest.builder().name(name).description(description).image(image).build()), HttpStatus.CREATED);
-    }
+
 }

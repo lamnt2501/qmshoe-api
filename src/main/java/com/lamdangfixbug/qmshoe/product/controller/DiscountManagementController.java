@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/discounts")
-public class DiscountController {
+@RequestMapping("/api/v1/management/discounts")
+public class DiscountManagementController {
     private final DiscountService discountService;
 
-    public DiscountController(DiscountService discountService) {
+    public DiscountManagementController(DiscountService discountService) {
         this.discountService = discountService;
     }
 

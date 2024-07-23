@@ -11,15 +11,26 @@ public enum Role {
             Permission.ADMIN_DELETE,
             Permission.ADMIN_UPDATE,
             Permission.ADMIN_READ,
-            Permission.ADMIN_ALL
+            Permission.ADMIN_ALL,
+            Permission.MANAGER_CREATE,
+            Permission.MANAGER_DELETE,
+            Permission.MANAGER_UPDATE,
+            Permission.MANAGER_READ,
+            Permission.MANAGER_ALL
     )),
     MANAGER(List.of(
-            Permission.MANAGE_CREATE,
-            Permission.MANAGE_DELETE,
-            Permission.MANAGE_UPDATE,
-            Permission.MANAGE_READ,
-            Permission.MANAGE_ALL
-    ));
+            Permission.MANAGER_CREATE,
+            Permission.MANAGER_DELETE,
+            Permission.MANAGER_UPDATE,
+            Permission.MANAGER_READ,
+            Permission.MANAGER_ALL
+    )),
+    READ(
+            List.of(
+                    Permission.ADMIN_READ,
+                    Permission.MANAGER_READ
+            )
+    );
 
     private final List<Permission> permissions;
 

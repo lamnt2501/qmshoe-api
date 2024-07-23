@@ -12,4 +12,7 @@ public interface OrderService {
     Order getOrder(int orderId);
     List<Order> getAllOrders(Map<String,Object> params);
     Order updateOrder(UpdateOrderStatusRequest request);
+    Order getOrderAdmin(int orderId);
+    List<Order> getAllOrdersAdmin(Map<String,Object> params);
+    Order updateOrderAdmin(UpdateOrderStatusRequest request);
 }

@@ -23,8 +23,4 @@ public class ColorController {
         return new ResponseEntity<>(colorService.findAllColors(), HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<Color> createColor(@RequestBody final Color color) {
-        return new ResponseEntity<>(colorService.createColor(color), HttpStatus.CREATED);
-    }
 }

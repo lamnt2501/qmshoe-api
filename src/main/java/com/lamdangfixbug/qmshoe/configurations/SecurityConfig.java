@@ -22,6 +22,19 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
+import static com.lamdangfixbug.qmshoe.user.entity.Role.ADMIN;
+import static com.lamdangfixbug.qmshoe.user.entity.Role.MANAGER;
+import static com.lamdangfixbug.qmshoe.user.entity.Permission.ADMIN_ALL;
+import static com.lamdangfixbug.qmshoe.user.entity.Permission.ADMIN_READ;
+import static com.lamdangfixbug.qmshoe.user.entity.Permission.ADMIN_CREATE;
+import static com.lamdangfixbug.qmshoe.user.entity.Permission.ADMIN_DELETE;
+import static com.lamdangfixbug.qmshoe.user.entity.Permission.ADMIN_UPDATE;
+import static com.lamdangfixbug.qmshoe.user.entity.Permission.MANAGER_ALL;
+import static com.lamdangfixbug.qmshoe.user.entity.Permission.MANAGER_CREATE;
+import static com.lamdangfixbug.qmshoe.user.entity.Permission.MANAGER_DELETE;
+import static com.lamdangfixbug.qmshoe.user.entity.Permission.MANAGER_READ;
+import static com.lamdangfixbug.qmshoe.user.entity.Permission.MANAGER_UPDATE;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -30,6 +43,7 @@ public class SecurityConfig {
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
     private final String[] WHITE_LIST_URL = {
+            "api/v1/auth/**",
             "api/v1/products/**",
             "api/v1/brands/**",
             "api/v1/colors/**",
@@ -51,7 +65,7 @@ public class SecurityConfig {
     public SecurityConfig(UserDetailsService userDetailsService,
                           JwtAuthenticationFilter jwtAuthenticationFilter,
                           ExceptionHandlerFilter exceptionHandlerFilter,
-                        @Qualifier("customAuthenticationEntryPoint") AuthenticationEntryPoint authenticationEntryPoint) {
+                          @Qualifier("customAuthenticationEntryPoint") AuthenticationEntryPoint authenticationEntryPoint) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.exceptionHandlerFilter = exceptionHandlerFilter;
@@ -62,13 +76,13 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        req -> req.requestMatchers(HttpMethod.GET,WHITE_LIST_URL).permitAll()
-                                .requestMatchers(HttpMethod.POST,"/api/v1/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/api/v1/management/**").hasAnyAuthority("MANAGER_CREATE","ADMIN_CREATE","ADMIN_ALL")
-                                .requestMatchers(HttpMethod.GET,"/api/v1/management/**").hasAnyAuthority("MANAGER_READ","ADMIN_READ","ADMIN_ALL")
-                                .requestMatchers(HttpMethod.DELETE,"/api/v1/management/**").hasAnyAuthority("MANAGER_DELETE","ADMIN_DELETE","ADMIN_ALL")
-                                .requestMatchers(HttpMethod.PATCH,"/api/v1/management/**").hasAnyAuthority("MANAGER_UPDATE","ADMIN_UPDATE","ADMIN_ALL")
-                                .requestMatchers(HttpMethod.PUT,"/api/v1/management/**").hasAnyAuthority("MANAGER_UPDATE","ADMIN_UPDATE","ADMIN_ALL")
+                        req -> req.requestMatchers(WHITE_LIST_URL).permitAll()
+                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
+                                .requestMatchers(HttpMethod.GET, "/api/v1/management/**").hasAnyAuthority(MANAGER_ALL.name(), ADMIN_ALL.name(), MANAGER_READ.name(), ADMIN_READ.name())
+                                .requestMatchers(HttpMethod.POST, "/api/v1/management/**").hasAnyAuthority(MANAGER_ALL.name(), ADMIN_ALL.name(), MANAGER_CREATE.name(), ADMIN_CREATE.name())
+                                .requestMatchers(HttpMethod.DELETE, "/api/v1/management/**").hasAnyAuthority(MANAGER_DELETE.name(), ADMIN_DELETE.name(), ADMIN_ALL.name(), MANAGER_ALL.name())
+                                .requestMatchers(HttpMethod.PATCH, "/api/v1/management/**").hasAnyAuthority(MANAGER_UPDATE.name(), ADMIN_UPDATE.name(), ADMIN_ALL.name(), MANAGER_ALL.name())
+                                .requestMatchers(HttpMethod.PUT, "/api/v1/management/**").hasAnyAuthority(MANAGER_ALL.name(), ADMIN_ALL.name(), ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
                                 .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
