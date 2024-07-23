@@ -64,7 +64,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         req -> req.requestMatchers(HttpMethod.GET,WHITE_LIST_URL).permitAll()
                                 .requestMatchers(HttpMethod.POST,"/api/v1/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/v1/products/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST,"/api/v1/management/**").hasAnyAuthority("MANAGER_CREATE","ADMIN_CREATE","ADMIN_ALL")
+                                .requestMatchers(HttpMethod.GET,"/api/v1/management/**").hasAnyAuthority("MANAGER_READ","ADMIN_READ","ADMIN_ALL")
+                                .requestMatchers(HttpMethod.DELETE,"/api/v1/management/**").hasAnyAuthority("MANAGER_DELETE","ADMIN_DELETE","ADMIN_ALL")
+                                .requestMatchers(HttpMethod.PATCH,"/api/v1/management/**").hasAnyAuthority("MANAGER_UPDATE","ADMIN_UPDATE","ADMIN_ALL")
+                                .requestMatchers(HttpMethod.PUT,"/api/v1/management/**").hasAnyAuthority("MANAGER_UPDATE","ADMIN_UPDATE","ADMIN_ALL")
                                 .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
