@@ -62,4 +62,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handlePasswordDidNotMatchException(PasswordDidNotMatchException ex, WebRequest request) {
         return new ResponseEntity<>(ErrorDetails.builder().message(ex.getMessage()).statusCode(400).build(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UpdateOrderException.class)
+    public ResponseEntity<Object> handleUpdateOrderException(UpdateOrderException ex, WebRequest request) {
+        return new ResponseEntity<>(ErrorDetails.builder().message(ex.getMessage()).statusCode(400).build(), HttpStatus.BAD_REQUEST);
+    }
 }
