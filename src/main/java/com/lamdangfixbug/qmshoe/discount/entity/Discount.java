@@ -1,6 +1,7 @@
-package com.lamdangfixbug.qmshoe.product.entity;
+package com.lamdangfixbug.qmshoe.discount.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.lamdangfixbug.qmshoe.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,13 +24,20 @@ public class Discount {
     @Column(nullable = false)
     private double value;
     @Column(nullable = false)
-    private double maxDiscount;
+    private String type;
+    @Column(nullable = false)
+    private double maxUsage;
     @Column(nullable = false)
     private LocalDateTime startAt;
     @Column(nullable = false)
     private LocalDateTime endAt;
-
+    private boolean isOrderDiscount;
     @OneToMany(mappedBy = "discount")
     @JsonBackReference
     private List<Product> products;
+
+    @PrePersist
+    protected void onCreate() {
+        isOrderDiscount = products.isEmpty();
+    }
 }

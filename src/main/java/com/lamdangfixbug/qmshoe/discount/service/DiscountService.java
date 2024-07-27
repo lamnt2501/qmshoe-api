@@ -1,7 +1,7 @@
-package com.lamdangfixbug.qmshoe.product.service;
+package com.lamdangfixbug.qmshoe.discount.service;
 
-import com.lamdangfixbug.qmshoe.product.entity.Discount;
-import com.lamdangfixbug.qmshoe.product.payload.request.DiscountRequest;
+import com.lamdangfixbug.qmshoe.discount.entity.Discount;
+import com.lamdangfixbug.qmshoe.discount.payload.request.DiscountRequest;
 
 import java.util.List;
 

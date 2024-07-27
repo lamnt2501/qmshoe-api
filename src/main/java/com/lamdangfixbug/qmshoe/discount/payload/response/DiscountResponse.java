@@ -1,6 +1,6 @@
-package com.lamdangfixbug.qmshoe.product.payload.response;
+package com.lamdangfixbug.qmshoe.discount.payload.response;
 
-import com.lamdangfixbug.qmshoe.product.entity.Discount;
+import com.lamdangfixbug.qmshoe.discount.entity.Discount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,13 +13,13 @@ import lombok.NoArgsConstructor;
 public class DiscountResponse {
     private String name;
     private double value;
-    private double maxDiscount;
+    private double maxUsage;
 
     public static DiscountResponse from(final Discount discount) {
         return DiscountResponse.builder()
                 .name(discount.getName())
                 .value(discount.getValue())
-                .maxDiscount(discount.getMaxDiscount())
+                .maxUsage(discount.getMaxUsage())
                 .build();
     }
 }

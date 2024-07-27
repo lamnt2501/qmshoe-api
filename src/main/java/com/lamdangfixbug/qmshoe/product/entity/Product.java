@@ -1,6 +1,7 @@
 package com.lamdangfixbug.qmshoe.product.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.lamdangfixbug.qmshoe.discount.entity.Discount;
 import com.lamdangfixbug.qmshoe.utils.Utils;
 import jakarta.persistence.*;
 import lombok.*;

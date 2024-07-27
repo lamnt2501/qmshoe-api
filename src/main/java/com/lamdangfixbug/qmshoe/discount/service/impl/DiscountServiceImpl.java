@@ -1,12 +1,12 @@
-package com.lamdangfixbug.qmshoe.product.service.impl;
+package com.lamdangfixbug.qmshoe.discount.service.impl;
 
 import com.lamdangfixbug.qmshoe.exceptions.ResourceNotFoundException;
-import com.lamdangfixbug.qmshoe.product.entity.Discount;
+import com.lamdangfixbug.qmshoe.discount.entity.Discount;
 import com.lamdangfixbug.qmshoe.product.entity.Product;
-import com.lamdangfixbug.qmshoe.product.payload.request.DiscountRequest;
-import com.lamdangfixbug.qmshoe.product.repository.DiscountRepository;
+import com.lamdangfixbug.qmshoe.discount.payload.request.DiscountRequest;
+import com.lamdangfixbug.qmshoe.discount.repository.DiscountRepository;
 import com.lamdangfixbug.qmshoe.product.repository.ProductRepository;
-import com.lamdangfixbug.qmshoe.product.service.DiscountService;
+import com.lamdangfixbug.qmshoe.discount.service.DiscountService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +30,7 @@ public class DiscountServiceImpl implements DiscountService {
         Discount discount = discountRepository.save(Discount.builder()
                 .name(discountRequest.getName())
                 .value(discountRequest.getValue())
-                .maxDiscount(discountRequest.getMaxDiscount())
+                .maxUsage(discountRequest.getMaxUsage())
                 .endAt(discountRequest.getEndAt())
                 .startAt(discountRequest.getStartAt())
                 .build());
@@ -58,7 +58,7 @@ public class DiscountServiceImpl implements DiscountService {
         Discount discount = discountRepository.findByName(discountRequest.getName()).orElseThrow(() -> new ResourceNotFoundException("Couldn't find discount with name: " + discountRequest.getName()));
         discount.setName(discountRequest.getName());
         discount.setValue(discountRequest.getValue());
-        discount.setMaxDiscount(discountRequest.getMaxDiscount());
+        discount.setMaxUsage(discountRequest.getMaxUsage());
         discount.setEndAt(discountRequest.getEndAt());
         discount.setStartAt(discountRequest.getStartAt());
         List<Product> products = discount.getProducts();

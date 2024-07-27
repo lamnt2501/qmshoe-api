@@ -1,5 +1,6 @@
 package com.lamdangfixbug.qmshoe.product.payload.response;
 
+import com.lamdangfixbug.qmshoe.discount.payload.response.DiscountResponse;
 import com.lamdangfixbug.qmshoe.product.entity.*;
 import lombok.*;
 

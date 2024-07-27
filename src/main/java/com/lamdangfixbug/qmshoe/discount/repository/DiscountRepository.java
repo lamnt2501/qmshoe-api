@@ -1,6 +1,6 @@
-package com.lamdangfixbug.qmshoe.product.repository;
+package com.lamdangfixbug.qmshoe.discount.repository;
 
-import com.lamdangfixbug.qmshoe.product.entity.Discount;
+import com.lamdangfixbug.qmshoe.discount.entity.Discount;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

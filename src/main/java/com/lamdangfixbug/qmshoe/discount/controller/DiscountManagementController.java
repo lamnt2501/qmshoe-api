@@ -1,8 +1,8 @@
-package com.lamdangfixbug.qmshoe.product.controller;
+package com.lamdangfixbug.qmshoe.discount.controller;
 
-import com.lamdangfixbug.qmshoe.product.entity.Discount;
-import com.lamdangfixbug.qmshoe.product.payload.request.DiscountRequest;
-import com.lamdangfixbug.qmshoe.product.service.DiscountService;
+import com.lamdangfixbug.qmshoe.discount.entity.Discount;
+import com.lamdangfixbug.qmshoe.discount.payload.request.DiscountRequest;
+import com.lamdangfixbug.qmshoe.discount.service.DiscountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
