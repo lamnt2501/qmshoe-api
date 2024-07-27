@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Transactional
@@ -78,7 +79,7 @@ public class CartServiceImpl implements CartService {
             ProductOption po = productOptionRepository.findBySku(ci.getId().getSku()).orElseThrow(() -> new ResourceNotFoundException("Product option not found"));
             cartItemResponses.add(CartItemResponse.builder()
                     .name(po.getProduct().getName())
-                    .imageUrl(po.getProduct().getProductImages().stream().filter(i->i.getColor().getId()==po.getColor().getId()).toList().getFirst().getUrl())
+                    .imageUrl(po.getProduct().getProductImages().stream().filter(i-> Objects.equals(i.getColor().getId(), po.getColor().getId())).toList().getFirst().getUrl())
                     .price(po.getProduct().getPrice())
                     .color(po.getColor().getName())
                     .size(po.getSize().getSize())
