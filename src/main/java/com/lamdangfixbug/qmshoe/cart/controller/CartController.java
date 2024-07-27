@@ -14,11 +14,13 @@ import java.io.IOException;
 @RequestMapping("/api/v1/carts")
 public class CartController {
     private final CartService cartService;
+
     public CartController(CartService cartService) {
         this.cartService = cartService;
     }
+
     @GetMapping
-    public ResponseEntity<CartResponse> getCart(){
+    public ResponseEntity<CartResponse> getCart() {
         return ResponseEntity.ok(cartService.getCartByCustomer());
     }
 

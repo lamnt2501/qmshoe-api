@@ -16,14 +16,5 @@ import java.util.List;
 @NoArgsConstructor
 public class CartResponse {
     private int id;
-    private List<CartItemRequest> items;
-
-    public static CartResponse from(final Cart cart) {
-        CartResponseBuilder builder = CartResponse.builder();
-        builder.id(cart.getId());
-        if(cart.getItems() != null) {
-            builder.items(cart.getItems().stream().map(CartItemRequest::from).toList());
-        }
-        return builder.build();
-    }
+    private List<CartItemResponse> items;
 }
