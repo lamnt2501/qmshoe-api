@@ -1,5 +1,9 @@
 package com.lamdangfixbug.qmshoe.order.service.impl;
 
+import com.lamdangfixbug.qmshoe.cart.entity.Cart;
+import com.lamdangfixbug.qmshoe.cart.entity.embedded.CartItemPK;
+import com.lamdangfixbug.qmshoe.cart.repository.CartItemRepository;
+import com.lamdangfixbug.qmshoe.cart.repository.CartRepository;
 import com.lamdangfixbug.qmshoe.exceptions.InsufficientInventoryException;
 import com.lamdangfixbug.qmshoe.exceptions.ResourceNotFoundException;
 import com.lamdangfixbug.qmshoe.exceptions.UpdateOrderException;
@@ -14,6 +18,9 @@ import com.lamdangfixbug.qmshoe.order.payload.request.UpdateOrderStatusRequest;
 import com.lamdangfixbug.qmshoe.order.repository.OrderRepository;
 import com.lamdangfixbug.qmshoe.order.repository.OrderStatusTrackingRepository;
 import com.lamdangfixbug.qmshoe.order.service.OrderService;
+import com.lamdangfixbug.qmshoe.payment.entity.PaymentDetails;
+import com.lamdangfixbug.qmshoe.payment.entity.PaymentStatus;
+import com.lamdangfixbug.qmshoe.payment.repository.PaymentDetailsRepository;
 import com.lamdangfixbug.qmshoe.product.entity.ProductOption;
 import com.lamdangfixbug.qmshoe.product.repository.ProductOptionRepository;
 import com.lamdangfixbug.qmshoe.user.entity.Address;
@@ -36,12 +43,23 @@ public class OrderServiceImpl implements OrderService {
     private final ProductOptionRepository productOptionRepository;
     private final OrderStatusTrackingRepository orderStatusTrackingRepository;
     private final AddressRepository addressRepository;
+    private final PaymentDetailsRepository paymentDetailsRepository;
+    private final CartItemRepository cartItemRepository;
+    private final CartRepository cartRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, ProductOptionRepository productOptionRepository, OrderStatusTrackingRepository orderStatusTrackingRepository, AddressRepository addressRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, ProductOptionRepository productOptionRepository, OrderStatusTrackingRepository orderStatusTrackingRepository, AddressRepository addressRepository, PaymentDetailsRepository paymentDetailsRepository, CartItemRepository cartItemRepository, CartRepository cartRepository) {
         this.orderRepository = orderRepository;
         this.productOptionRepository = productOptionRepository;
         this.orderStatusTrackingRepository = orderStatusTrackingRepository;
         this.addressRepository = addressRepository;
+        this.paymentDetailsRepository = paymentDetailsRepository;
+        this.cartItemRepository = cartItemRepository;
+        this.cartRepository = cartRepository;
+    }
+
+    @Override
+    public boolean orderExists(int orderId) {
+        return orderRepository.existsById(orderId);
     }
 
     @Override
@@ -61,9 +79,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order placeOrder(OrderRequest orderRequest) {
         Customer customer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+        Cart cart = cartRepository.findByCustomerId(customer.getId()).orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
         Order order = Order.builder().status(OrderStatus.WAITING).customer(customer).build();
-
         order = orderRepository.save(order);
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -91,12 +108,19 @@ public class OrderServiceImpl implements OrderService {
                             .quantity(oir.getQuantity())
                             .build()
             );
+
             // update inventory
             productOption.setQuantity(productOption.getQuantity() - oir.getQuantity());
             productOptionRepository.save(productOption);
+
             //update total
             // todo: them giam gia cho don hang voi voucher va theo giam gia san pham
             order.setTotal(order.getTotal() + oir.getQuantity() * productOption.getProduct().getPrice());
+
+            // update cart
+            cartItemRepository.deleteById(
+                    CartItemPK.builder().cartId(cart.getId()).sku(oir.getSku()).build()
+            );
         }
 
         order.setOrderItems(orderItems);
@@ -116,6 +140,18 @@ public class OrderServiceImpl implements OrderService {
                 .customerId(customer.getId())
                 .build()));
         order.setOrderStatusTracking(tracking);
+
+        // transaction(payment) for order
+        PaymentDetails paymentDetails = paymentDetailsRepository.save(
+                PaymentDetails.builder()
+                        .amount(order.getTotal())
+                        .description(customer.getName() + " thanh toan don hang " + order.getId())
+                        .status(orderRequest.getPaymentMethod().getName().equalsIgnoreCase("COD") ? PaymentStatus.UNPAID : PaymentStatus.PROCESSING)
+                        .paymentMethod(orderRequest.getPaymentMethod())
+                        .orderId(order.getId())
+                        .build()
+        );
+        order.setPaymentDetails(paymentDetails);
         return orderRepository.save(order);
     }
 
@@ -123,9 +159,9 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order updateOrder(UpdateOrderStatusRequest request) {
         Customer customer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Order order = orderRepository.findByIdAndCustomer_Id(request.getId(),  customer.getId()).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        Order order = orderRepository.findByIdAndCustomer_Id(request.getId(), customer.getId()).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
-        if (request.getStatus() != OrderStatus.CANCEL || order.getStatus().getPriority() > 0 ) {
+        if (request.getStatus() != OrderStatus.CANCEL || order.getStatus().getPriority() > 0) {
             throw new UpdateOrderException("Invalid order status");
         } else if (request.getMessage() == null || request.getMessage().isEmpty()) {
             throw new UpdateOrderException("You must state the reason for canceling order!");

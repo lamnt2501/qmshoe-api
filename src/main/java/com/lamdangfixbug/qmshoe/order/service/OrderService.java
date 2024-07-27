@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface OrderService {
+    boolean orderExists(int orderId);
     Order placeOrder(OrderRequest orderRequest);
     Order getOrder(int orderId);
     List<Order> getAllOrders(Map<String,Object> params);

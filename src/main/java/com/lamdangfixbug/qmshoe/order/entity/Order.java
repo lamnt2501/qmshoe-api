@@ -1,6 +1,7 @@
 package com.lamdangfixbug.qmshoe.order.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.lamdangfixbug.qmshoe.payment.entity.PaymentDetails;
 import com.lamdangfixbug.qmshoe.user.entity.Address;
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
 import jakarta.persistence.*;
@@ -30,7 +31,8 @@ public class Order {
     @Column(insertable = false)
     private LocalDateTime updatedAt;
 
-
+    @OneToOne
+    private PaymentDetails paymentDetails;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
