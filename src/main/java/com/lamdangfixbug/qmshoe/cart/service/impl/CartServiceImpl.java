@@ -45,7 +45,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartResponse getCartByCustomer() {
         Customer customer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Cart cart = cartRepository.findByCustomerId(customer.getId()).orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
+        Cart cart = getCartByCustomerId(customer.getId());
         return CartResponse
                 .builder()
                 .id(cart.getId())
@@ -56,30 +56,40 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartResponse updateCart(CartRequest cartRequest) {
         Customer customer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Cart cart = cartRepository.findByCustomerId(customer.getId()).orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
-        List<CartItem> newItems = new ArrayList<>();
+        Cart cart = getCartByCustomerId(customer.getId());
+        List<CartItem> cartItems = cart.getItems();
         for (CartItemRequest cir : cartRequest.getItems()) {
-            newItems.add(
-                    CartItem.builder().id(
-                                    CartItemPK.builder().sku(cir.getSku()).cartId(cart.getId()).build()
-                            )
-                            .quantity(cir.getQuantity()).build());
-
+            CartItem cartItem = cartItemRepository.findById(CartItemPK.builder().cartId(cart.getId()).sku(cir.getSku()).build()).orElse(null);
+            if (cartItem == null) {
+                if (cir.getQuantity() != 0) {
+                    CartItem newCartItem = CartItem.builder().quantity(cir.getQuantity()).id(CartItemPK.builder().cartId(cart.getId()).sku(cir.getSku()).build()).build();
+                    cartItemRepository.save(newCartItem);
+                    cartItems.add(newCartItem);
+                }
+            } else {
+                if (cir.getQuantity() != 0) {
+                    cartItems.stream().filter(ci ->
+                            ci.getId().getCartId() == cart.getId() && ci.getId().getSku().equals(cartItem.getId().getSku())
+                    ).toList().getFirst().setQuantity(cir.getQuantity());
+                    cartItem.setQuantity(cir.getQuantity());
+                    cartItemRepository.save(cartItem);
+                } else {
+                    cartItems.remove(cartItem);
+                    cartItemRepository.delete(cartItem);
+                }
+            }
         }
-        cartItemRepository.deleteAll();
-        cartItemRepository.saveAll(newItems);
-        cart.setItems(newItems);
-
+        cart.setItems(cartItems);
         return CartResponse.builder().id(cart.getId()).items(buildCartItemResponses(cart)).build();
     }
 
     private List<CartItemResponse> buildCartItemResponses(Cart cart) {
         List<CartItemResponse> cartItemResponses = new ArrayList<>();
-        for(CartItem ci :  cart.getItems()){
+        for (CartItem ci : cart.getItems()) {
             ProductOption po = productOptionRepository.findBySku(ci.getId().getSku()).orElseThrow(() -> new ResourceNotFoundException("Product option not found"));
             cartItemResponses.add(CartItemResponse.builder()
                     .name(po.getProduct().getName())
-                    .imageUrl(po.getProduct().getProductImages().stream().filter(i-> Objects.equals(i.getColor().getId(), po.getColor().getId())).toList().getFirst().getUrl())
+                    .imageUrl(po.getProduct().getProductImages().stream().filter(i -> Objects.equals(i.getColor().getId(), po.getColor().getId())).toList().getFirst().getUrl())
                     .price(po.getProduct().getPrice())
                     .color(po.getColor().getName())
                     .size(po.getSize().getSize())
@@ -88,4 +98,9 @@ public class CartServiceImpl implements CartService {
         }
         return cartItemResponses;
     }
+
+    private Cart getCartByCustomerId(int customerId) {
+        return cartRepository.findByCustomerId(customerId).orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
+    }
+
 }
