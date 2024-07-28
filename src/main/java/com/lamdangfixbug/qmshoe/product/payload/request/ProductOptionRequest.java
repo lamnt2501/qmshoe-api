@@ -11,5 +11,6 @@ public class ProductOptionRequest {
     private int colorId;
     private int sizeId;
     private int quantity;
+    private double price;
     private MultipartFile[] images;
 }

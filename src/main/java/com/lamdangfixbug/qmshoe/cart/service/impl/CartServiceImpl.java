@@ -90,7 +90,7 @@ public class CartServiceImpl implements CartService {
             cartItemResponses.add(CartItemResponse.builder()
                     .name(po.getProduct().getName())
                     .imageUrl(po.getProduct().getProductImages().stream().filter(i -> Objects.equals(i.getColor().getId(), po.getColor().getId())).toList().getFirst().getUrl())
-                    .price(po.getProduct().getPrice())
+                    .price(po.getPrice())
                     .color(po.getColor().getName())
                     .size(po.getSize().getSize())
                     .quantity(ci.getQuantity())

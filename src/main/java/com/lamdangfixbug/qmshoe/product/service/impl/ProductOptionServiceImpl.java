@@ -54,6 +54,7 @@ public class ProductOptionServiceImpl implements ProductOptionService {
                 .product(product)
                 .color(color)
                 .size(size)
+                .price(productOptionRequest.getPrice())
                 .quantity(productOptionRequest.getQuantity())
                 .build();
         return productOptionRepository.save(productOption);

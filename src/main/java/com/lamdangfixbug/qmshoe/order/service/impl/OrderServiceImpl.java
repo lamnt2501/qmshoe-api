@@ -115,7 +115,7 @@ public class OrderServiceImpl implements OrderService {
 
             //update total
             // todo: them giam gia cho don hang voi voucher va theo giam gia san pham
-            order.setTotal(order.getTotal() + oir.getQuantity() * productOption.getProduct().getPrice());
+            order.setTotal(order.getTotal() + oir.getQuantity() * productOption.getPrice());
 
             // update cart
             cartItemRepository.deleteById(

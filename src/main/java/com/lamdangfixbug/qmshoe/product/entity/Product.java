@@ -27,8 +27,7 @@ public class Product {
     private String slug;
     private String description;
 
-    @Column(nullable = false)
-    private double price;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

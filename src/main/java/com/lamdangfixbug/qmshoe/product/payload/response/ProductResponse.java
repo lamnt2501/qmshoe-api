@@ -15,10 +15,8 @@ public class ProductResponse {
     private int id;
     private String name;
     private String description;
-    private double price;
     private String slug;
     private String brand;
-    private LocalDateTime createdAt;
     private DiscountResponse discount;
     private String[] categories;
     private List<ProductOptionResponse> options;
@@ -29,10 +27,8 @@ public class ProductResponse {
         builder.id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
-                .price(product.getPrice())
                 .slug(product.getSlug())
                 .brand(product.getBrand().getName())
-                .createdAt(product.getCreatedAt())
                 .categories(
                         product.getCategories().stream().map(Category::getName).toArray(String[]::new)
                 );

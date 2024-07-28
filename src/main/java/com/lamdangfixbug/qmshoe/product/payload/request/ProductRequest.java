@@ -10,5 +10,4 @@ public class ProductRequest {
     private String description;
     private int[] categoryId;
     private int brandId;
-    private double price;
 }

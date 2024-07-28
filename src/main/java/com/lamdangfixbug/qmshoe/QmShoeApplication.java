@@ -18,7 +18,7 @@ public class QmShoeApplication {
         SpringApplication.run(QmShoeApplication.class, args);
     }
 
-//    @Bean
+//        @Bean
     CommandLineRunner commandLineRunner(
             CategoryRepository categoryRepository,
             BrandRepository brandRepository,
@@ -44,7 +44,6 @@ public class QmShoeApplication {
                 int finalI = i;
                 productRepository.save(Product.builder()
                         .name(faker.commerce().productName())
-                        .price(Math.random() * 100000 + 100000)
                         .description(faker.lorem().sentence())
                         .brand(brands.get(random.nextInt(10)))
                         .categories(
@@ -60,6 +59,7 @@ public class QmShoeApplication {
                             .color(colors.get(random.nextInt(10)))
                             .size(sizes.get(random.nextInt(10)))
                             .product(product)
+                            .price((int)(Math.random()*1000001+250000))
                             .quantity(random.nextInt(191) + 10)
                             .build();
                     try {

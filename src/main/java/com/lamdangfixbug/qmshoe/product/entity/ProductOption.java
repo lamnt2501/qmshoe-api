@@ -22,6 +22,9 @@ public class ProductOption {
     @JsonBackReference
     private Product product;
 
+    @Column(nullable = false)
+    private double price;
+
     @ManyToOne
     @JoinColumn(name = "color_id")
     private Color color;
