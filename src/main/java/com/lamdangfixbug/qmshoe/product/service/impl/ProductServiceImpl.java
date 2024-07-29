@@ -8,10 +8,7 @@ import com.lamdangfixbug.qmshoe.product.payload.request.ProductRequest;
 import com.lamdangfixbug.qmshoe.product.repository.*;
 import com.lamdangfixbug.qmshoe.product.service.ProductService;
 import com.lamdangfixbug.qmshoe.utils.Utils;
-import org.hibernate.annotations.Cache;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
