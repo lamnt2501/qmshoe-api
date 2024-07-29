@@ -25,6 +25,7 @@ public class Product {
     private String name;
 
     private String slug;
+    @Column(length = 700)
     private String description;
 
 
