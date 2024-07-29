@@ -20,7 +20,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
                     "join product_categories as c on c.product_id = p.id " +
                     "join product_details as pd on pd.product_id = p.id " +
                     "where c.category_id = :category " +
-                    "and p.price between :minPrice and :maxPrice " +
+                    "and pd.price between :minPrice and :maxPrice " +
                     "and pd.color_id in :colors " +
                     "and pd.size_id in :sizes")
     List<Product> getFilteredProduct(@Param("category") int categoryId,

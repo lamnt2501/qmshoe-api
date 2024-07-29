@@ -8,6 +8,7 @@ import com.lamdangfixbug.qmshoe.product.payload.request.ProductRequest;
 import com.lamdangfixbug.qmshoe.product.repository.*;
 import com.lamdangfixbug.qmshoe.product.service.ProductService;
 import com.lamdangfixbug.qmshoe.utils.Utils;
+import org.hibernate.annotations.Cache;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -76,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
         List<Integer> sizes = params.get("sizes") != null ? List.class.cast(params.get("sizes")) : sizeRepository.getAllIds();
         int categoryId = params.get("category") != null ? Integer.parseInt((String) params.get("category")) : 1;
         double minPrice = params.get("minPrice") != null ? Double.parseDouble((String) params.get("minPrice")) : 0;
-        double maxPrice = params.get("maxPrice") != null ? Double.parseDouble((String) params.get("maxPrice")) : 200000;
+        double maxPrice = params.get("maxPrice") != null ? Double.parseDouble((String) params.get("maxPrice")) : 3000000;
         return productRepository
                 .getFilteredProduct(categoryId,minPrice, maxPrice, colors, sizes, pageable);
     }
