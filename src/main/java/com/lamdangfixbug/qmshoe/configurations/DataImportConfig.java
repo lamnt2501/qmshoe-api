@@ -39,7 +39,7 @@ public class DataImportConfig {
     }
 
 
-    //    @Bean
+        @Bean
     CommandLineRunner commandLineRunner() {
         return args -> loadData();
     }
@@ -101,10 +101,10 @@ public class DataImportConfig {
                 for (ProductJsonOption o : productJson.getOptions()) {
                     Color c = colorRepository.findByName(o.getColor()).orElse(null);
                     for (int s : o.getSize()) {
-                        ProductOption po = productOptionRepository.findByProductAndColor(p, c).orElse(null);
+                        List<ProductOption> po = productOptionRepository.findByProductAndColor(p, c);
                         double price = faker.random().nextInt(345000, 2500000);
-                        if (po != null) {
-                            price = po.getPrice();
+                        if (!po.isEmpty()) {
+                            price = po.getFirst().getPrice();
                         }
                         productOptionRepository.save(ProductOption.builder()
                                 .price(price)
