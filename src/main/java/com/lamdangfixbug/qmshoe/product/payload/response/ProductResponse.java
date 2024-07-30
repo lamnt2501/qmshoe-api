@@ -21,6 +21,7 @@ public class ProductResponse {
     private String[] categories;
     private List<ProductOptionResponse> options;
     private List<ProductImageResponse> images;
+    private double avgRatings;
 
     public static ProductResponse from(final Product product) {
         ProductResponseBuilder builder = ProductResponse.builder();
@@ -29,6 +30,7 @@ public class ProductResponse {
                 .description(product.getDescription())
                 .slug(product.getSlug())
                 .brand(product.getBrand().getName())
+                .avgRatings(product.getAvgRatings())
                 .categories(
                         product.getCategories().stream().map(Category::getName).toArray(String[]::new)
                 );

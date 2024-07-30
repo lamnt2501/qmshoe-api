@@ -44,6 +44,7 @@ public class SecurityConfig {
     private final ExceptionHandlerFilter exceptionHandlerFilter;
     private final String[] WHITE_LIST_URL = {
             "api/v1/auth/**",
+            "api/v1/ratings/product/**",
             "api/v1/products/**",
             "api/v1/brands/**",
             "api/v1/colors/**",

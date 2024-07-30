@@ -27,8 +27,7 @@ public class Product {
     private String slug;
     @Column(length = 700)
     private String description;
-
-
+    private double avgRatings;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -51,11 +50,14 @@ public class Product {
     @JsonManagedReference
     private List<ProductImage> productImages;
 
-
     @ManyToOne
     @JoinColumn(name = "discount_id")
     @JsonManagedReference
     private Discount discount;
+
+//    @OneToMany(mappedBy = "productId",fetch = FetchType.LAZY)
+//    @JsonManagedReference
+//    private List<Rating> ratings;
 
     @PrePersist
     protected void onCreate() {
