@@ -65,10 +65,12 @@ public class RatingServiceImpl implements RatingService {
 
         Rating r = ratingRepository.findByCustomer_IdAndProductId(customer.getId(),rating.getProductId()).orElse(null);
         if(r != null) {
-            product.setAvgRatings((newTotalRatings-r.getRatingValue())/ratingCount);
-            r.setRatingValue(rating.getRating());
-            r.setComment(rating.getComment());
-            r = ratingRepository.save(r);
+            if(r.getUpdatedAt() == null) {
+                product.setAvgRatings((newTotalRatings - r.getRatingValue()) / ratingCount);
+                r.setRatingValue(rating.getRating());
+                r.setComment(rating.getComment());
+                r = ratingRepository.save(r);
+            }
         }else{
             r = ratingRepository.save(
                     Rating.builder().customer(customer).productId(rating.getProductId()).comment(rating.getComment()).ratingValue(rating.getRating()).build()
