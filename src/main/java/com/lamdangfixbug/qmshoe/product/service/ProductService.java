@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface ProductService {
     Product createProduct(ProductRequest productRequest);
-    Product updateProduct(Product product);
+    Product updateProduct(int id,ProductRequest productRequest);
     Product findProductById(Integer id);
     Product findProductBySlug(String slug);
     List<Product> findAllProducts(Map<String, Object> params);

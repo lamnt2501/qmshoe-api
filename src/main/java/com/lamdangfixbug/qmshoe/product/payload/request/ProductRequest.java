@@ -1,10 +1,8 @@
 package com.lamdangfixbug.qmshoe.product.payload.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
-@Getter
+@Data
 public class ProductRequest {
     private String name;
     private String description;

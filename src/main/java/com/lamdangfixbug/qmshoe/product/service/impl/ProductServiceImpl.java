@@ -1,5 +1,6 @@
 package com.lamdangfixbug.qmshoe.product.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lamdangfixbug.qmshoe.exceptions.ResourceNotFoundException;
 import com.lamdangfixbug.qmshoe.product.entity.Brand;
 import com.lamdangfixbug.qmshoe.product.entity.Category;
@@ -49,11 +50,32 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(Product product) {
-        if (productRepository.existsById(product.getId())) {
-            return productRepository.save(product);
+    public Product updateProduct(int id, ProductRequest productRequest) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product with id: " + id + " not found"));
+        String name = productRequest.getName();
+        if (name!=null) {
+            product.setName(name);
+            product.setSlug(Utils.getSlug(name));
         }
-        throw new ResourceNotFoundException("Couldn't find product with id: " + product.getId());
+        String des = productRequest.getDescription();
+        if (des!=null) {
+            product.setDescription(des);
+        }
+        int brandId = productRequest.getBrandId();
+        if (brandId!=0) {
+            if (brandId != product.getBrand().getId()) {
+                product.setBrand(brandRepository.findById(brandId).orElseThrow(() -> new ResourceNotFoundException("Couldn't find brand with id: " + brandId)));
+            }
+        }
+        int[] categoryId = productRequest.getCategoryId();
+        if(categoryId!=null && categoryId.length>0) {
+            List<Category> categories = new ArrayList<>();
+            for(int cid : categoryId){
+                categories.add(categoryRepository.findById(cid).orElseThrow(()-> new ResourceNotFoundException("Couldn't find category with id: " + cid)));
+            }
+            product.setCategories(categories);
+        }
+        return productRepository.save(product);
     }
 
     @Override
@@ -69,13 +91,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> findAllProducts(Map<String, Object> params) {
         Pageable pageable = Utils.buildPageable(params);
-        if(params.isEmpty()) return productRepository.getAllProduct(pageable);
+        if (params.isEmpty()) return productRepository.getAllProduct(pageable);
         List<Integer> colors = params.get("colors") != null ? List.class.cast(params.get("colors")) : colorRepository.getAllIds();
         List<Integer> sizes = params.get("sizes") != null ? List.class.cast(params.get("sizes")) : sizeRepository.getAllIds();
         int categoryId = params.get("category") != null ? Integer.parseInt((String) params.get("category")) : 1;
         double minPrice = params.get("minPrice") != null ? Double.parseDouble((String) params.get("minPrice")) : 0;
         double maxPrice = params.get("maxPrice") != null ? Double.parseDouble((String) params.get("maxPrice")) : 3000000;
         return productRepository
-                .getFilteredProduct(categoryId,minPrice, maxPrice, colors, sizes, pageable);
+                .getFilteredProduct(categoryId, minPrice, maxPrice, colors, sizes, pageable);
     }
 }

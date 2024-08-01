@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("api/v1/management/products")
 public class ProductManagementController {
@@ -30,8 +32,8 @@ public class ProductManagementController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        return new ResponseEntity<>(ProductResponse.from(productService.updateProduct(product)), HttpStatus.OK);
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable int id, @RequestBody ProductRequest productRequest) {
+        return new ResponseEntity<>(ProductResponse.from(productService.updateProduct(id,productRequest)), HttpStatus.OK);
     }
 
     //--------------
