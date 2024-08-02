@@ -94,6 +94,8 @@ public class CartServiceImpl implements CartService {
                     .color(po.getColor().getName())
                     .size(po.getSize().getSize())
                     .quantity(ci.getQuantity())
+                    .sku(po.getSku())
+                    .slug(po.getProduct().getSlug())
                     .build());
         }
         return cartItemResponses;

@@ -12,10 +12,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartItemResponse {
+    private String sku;
     private String name;
+    private String slug;
     private String imageUrl;
     private double price;
     private String color;
     private String size;
     private int quantity;
+
 }
