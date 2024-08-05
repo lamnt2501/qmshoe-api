@@ -76,7 +76,7 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http.csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         req -> req.requestMatchers(WHITE_LIST_URL).permitAll()
                                 .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
