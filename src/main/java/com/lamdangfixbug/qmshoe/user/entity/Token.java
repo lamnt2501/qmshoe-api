@@ -18,4 +18,6 @@ public class Token {
     private String token;
     private boolean isRevoke;
     private String belongToUser;
+    @Enumerated(EnumType.STRING)
+    private TokenType type;
 }
