@@ -1,6 +1,7 @@
 package com.lamdangfixbug.qmshoe.auth.service;
 
 import com.lamdangfixbug.qmshoe.user.entity.Token;
+import com.lamdangfixbug.qmshoe.user.entity.TokenType;
 import com.lamdangfixbug.qmshoe.user.repository.TokenRepository;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
@@ -43,11 +44,17 @@ public class JwtService {
         return !extractClaims(token,Claims::getExpiration).before(new Date()) && !t.isRevoke();
     }
 
-    public String generateToken(UserDetails user) {
+    public String generateToken(UserDetails user, TokenType tokenType) {
+        Date expiration = switch (tokenType){
+            case ACCESS_TOKEN -> new Date(new Date().getTime() + 1000 * 60 * 60);
+            case REFRESH_TOKEN -> new Date(new Date().getTime() + 1000 * 60 * 60 * 7);
+            case FORGOT_PASSWORD_TOKEN -> new Date(new Date().getTime() + 1000 * 60);
+            default -> new Date();
+        };
         return Jwts.builder()
                 .subject(user.getUsername())
                 .issuedAt(new Date())
-                .expiration(new Date(new Date().getTime() + 1000 * 60 * 60))
+                .expiration(expiration)
                 .signWith(getSignKey())
                 .compact();
     }
