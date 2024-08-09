@@ -21,5 +21,4 @@ public class OrderRequest {
     private OrderItemRequest[] items;
     private AddressRequest address;
     private PaymentMethod paymentMethod;
-    private String callbackUrl;
 }

@@ -7,6 +7,7 @@ import com.lamdangfixbug.qmshoe.order.payload.request.UpdateOrderStatusRequest;
 import com.lamdangfixbug.qmshoe.order.payload.response.OrderResponse;
 import com.lamdangfixbug.qmshoe.order.service.OrderService;
 import com.lamdangfixbug.qmshoe.payment.service.VNPayService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String,String>> createOrder(@RequestBody String order) throws IOException {
+    public ResponseEntity<Map<String,String>> createOrder(@RequestBody String order, HttpServletRequest request) throws IOException {
         OrderRequest orderRequest;
         ObjectMapper mapper = new ObjectMapper();
         orderRequest = mapper.readValue(order, OrderRequest.class);
@@ -49,13 +50,11 @@ public class OrderController {
         if (!orderRequest.getPaymentMethod().getName().equalsIgnoreCase("COD")) {
 
             String paymentUrl = vnPayService.getPaymentUrl(
-                    (int) createdOrder.getTotal(),
-                    createdOrder.getPaymentDetails().getDescription(),
-                    createdOrder.getId(),
-                    orderRequest.getCallbackUrl());
+                   createdOrder,
+                    request.getRemoteAddr());
             response.put("Message","Redirect to checkout");
             response.put("PaymentUrl", paymentUrl);
-            response.put("StatusCode",HttpStatus.TEMPORARY_REDIRECT.name());
+            response.put("StatusCode", String.valueOf(HttpStatus.TEMPORARY_REDIRECT.value()));
         }else {
             response.put("Message", "Created Order Successfully");
             response.put("StatusCode", HttpStatus.OK.name());

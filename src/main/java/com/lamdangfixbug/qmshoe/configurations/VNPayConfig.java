@@ -17,7 +17,7 @@ public class VNPayConfig {
     private final String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
     private final String vnp_TmnCode;
     private final String vnp_HashSecret;
-    private final String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
+    private final String returnUrl = "http://localhost:3000";
 
     public VNPayConfig(Dotenv dotenv) {
         vnp_TmnCode = dotenv.get("VNP_TMN_CODE");

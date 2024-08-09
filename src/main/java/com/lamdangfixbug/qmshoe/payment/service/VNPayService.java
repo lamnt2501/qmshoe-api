@@ -1,7 +1,9 @@
 package com.lamdangfixbug.qmshoe.payment.service;
 
 import com.lamdangfixbug.qmshoe.configurations.VNPayConfig;
+import com.lamdangfixbug.qmshoe.order.entity.Order;
 import com.lamdangfixbug.qmshoe.order.payload.request.OrderRequest;
+import com.lamdangfixbug.qmshoe.utils.Utils;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -17,12 +19,13 @@ public class VNPayService {
         this.vnPayConfig = vnPayConfig;
     }
 
-    public String getPaymentUrl(int total, String orderInform,int orderId,String callbackUrl) {
+    public String getPaymentUrl(Order order, String ipAddress) {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
-        String vnp_TxnRef = String.valueOf(orderId);
+        String vnp_TxnRef = String.valueOf(order.getId());
 //                vnPayConfig.getRandomNumber(8);
         String vnp_IpAddr = "127.0.0.1";
+//                ipAddress;
         String vnp_TmnCode = vnPayConfig.getVnp_TmnCode();
         String orderType = "order-type";
 
@@ -30,17 +33,17 @@ public class VNPayService {
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(total * 100));
+        vnp_Params.put("vnp_Amount", String.valueOf((int) order.getTotal() * 100));
         vnp_Params.put("vnp_CurrCode", "VND");
 
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", orderInform);
+        vnp_Params.put("vnp_OrderInfo", Utils.deAccent(order.getPaymentDetails().getDescription()));
         vnp_Params.put("vnp_OrderType", orderType);
 
-        String locate = "vn";
-        vnp_Params.put("vnp_Locale", locate);
+        String locale = "vn";
+        vnp_Params.put("vnp_Locale", locale);
 
-        vnp_Params.put("vnp_ReturnUrl", callbackUrl);
+        vnp_Params.put("vnp_ReturnUrl", vnPayConfig.getReturnUrl());
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -58,8 +61,8 @@ public class VNPayService {
         StringBuilder query = new StringBuilder();
         Iterator<String> itr = fieldNames.iterator();
         while (itr.hasNext()) {
-            String fieldName = (String) itr.next();
-            String fieldValue = (String) vnp_Params.get(fieldName);
+            String fieldName = itr.next();
+            String fieldValue = vnp_Params.get(fieldName);
             if ((fieldValue != null) && (!fieldValue.isEmpty())) {
                 //Build hash data
                 hashData.append(fieldName);
@@ -78,11 +81,11 @@ public class VNPayService {
         String queryUrl = query.toString();
         String vnp_SecureHash = vnPayConfig.hmacSHA512(vnPayConfig.getVnp_HashSecret(), hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        return  vnPayConfig.getVnp_PayUrl() + "?" + queryUrl;
+        return vnPayConfig.getVnp_PayUrl() + "?" + queryUrl;
 
     }
 
-    public void createTransaction(OrderRequest orderRequest){
+    public void createTransaction(OrderRequest orderRequest) {
 
     }
 }
