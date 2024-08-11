@@ -1,5 +1,6 @@
 package com.lamdangfixbug.qmshoe.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,5 +18,7 @@ public class Address {
     private String city;
     private String district;
     private String specificAddress;
+    private String ward;
+    @JsonIgnore
     private int customerId;
 }
