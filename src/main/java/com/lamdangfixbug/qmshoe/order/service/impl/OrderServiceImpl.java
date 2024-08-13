@@ -12,6 +12,7 @@ import com.lamdangfixbug.qmshoe.order.entity.OrderItem;
 import com.lamdangfixbug.qmshoe.order.entity.OrderStatus;
 import com.lamdangfixbug.qmshoe.order.entity.OrderStatusTracking;
 import com.lamdangfixbug.qmshoe.order.entity.embedded.OrderItemPK;
+import com.lamdangfixbug.qmshoe.order.payload.request.AddressRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.OrderItemRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.OrderRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.UpdateOrderStatusRequest;
@@ -84,6 +85,10 @@ public class OrderServiceImpl implements OrderService {
         order = orderRepository.save(order);
 
         List<OrderItem> orderItems = new ArrayList<>();
+        String phoneNumber = orderRequest.getPhoneNumber();
+        order.setPhoneNumber(phoneNumber == null ? customer.getPhoneNumber() : phoneNumber);
+
+        // order items
         for (OrderItemRequest oir : orderRequest.getItems()) {
             ProductOption productOption = productOptionRepository.findBySku(oir.getSku()).orElseThrow(() -> new ResourceNotFoundException("Product option not found"));
 
@@ -131,27 +136,40 @@ public class OrderServiceImpl implements OrderService {
                 .orderId(order.getId())
                 .message("Your order is being processed!")
                 .status(order.getStatus())
-                .build()))
-        ;
-        order.setAddress(addressRepository.save(Address.builder()
-                .city(orderRequest.getAddress().getCity())
-                .district(orderRequest.getAddress().getDistrict())
-                .specificAddress(orderRequest.getAddress().getSpecificAddress())
-                .customerId(customer.getId())
                 .build()));
+
+        // address for order
+        Address address;
+        AddressRequest addressRequest = orderRequest.getAddress();
+        if (addressRequest != null) {
+            String city = addressRequest.getCity();
+            String district = addressRequest.getDistrict();
+            String ward = addressRequest.getWard();
+            String specificAddress = addressRequest.getSpecificAddress();
+            address = addressRepository.findByCustomerIdAndCityLikeIgnoreCaseAndDistrictLikeIgnoreCaseAndWardLikeIgnoreCaseAndSpecificAddressLikeIgnoreCase(
+                    customer.getId(), city, district, ward, specificAddress
+            ).orElse(null);
+            if (address == null) address = addressRepository.save(Address.builder()
+                    .city(city).district(district).ward((ward)).specificAddress(specificAddress).customerId(customer.getId()).build());
+        } else {
+            address = addressRepository.findByCustomerIdAndId(customer.getId(), orderRequest.getAddressId()).orElseThrow(() -> new ResourceNotFoundException("Address not found"));
+        }
+
+
+        order.setAddress(address);
         order.setOrderStatusTracking(tracking);
 
         // transaction(payment) for order
-        PaymentDetails paymentDetails = paymentDetailsRepository.save(
-                PaymentDetails.builder()
-                        .amount(order.getTotal())
-                        .description(customer.getName() + " thanh toan don hang " + order.getId())
-                        .status(orderRequest.getPaymentMethod().getName().equalsIgnoreCase("COD") ? PaymentStatus.UNPAID : PaymentStatus.PROCESSING)
-                        .paymentMethod(orderRequest.getPaymentMethod())
-                        .orderId(order.getId())
-                        .build()
+        PaymentDetails paymentDetails = paymentDetailsRepository.save(PaymentDetails.builder()
+                .amount(order.getTotal())
+                .description(customer.getName() + " thanh toan don hang " + order.getId())
+                .status(orderRequest.getPaymentMethod().getName().equalsIgnoreCase("COD") ? PaymentStatus.UNPAID : PaymentStatus.PROCESSING)
+                .paymentMethod(orderRequest.getPaymentMethod())
+                .orderId(order.getId())
+                .build()
         );
         order.setPaymentDetails(paymentDetails);
+
         return orderRepository.save(order);
     }
 

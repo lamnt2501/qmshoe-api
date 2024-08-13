@@ -6,5 +6,6 @@ import lombok.Data;
 public class AddressRequest {
     private String city;
     private String district;
+    private String ward;
     private String specificAddress;
 }

@@ -57,7 +57,7 @@ public class OrderController {
             response.put("StatusCode", String.valueOf(HttpStatus.TEMPORARY_REDIRECT.value()));
         }else {
             response.put("Message", "Created Order Successfully");
-            response.put("StatusCode", HttpStatus.OK.name());
+            response.put("StatusCode", String.valueOf(HttpStatus.OK.value()));
         }
         return ResponseEntity.ok(response);
     }
