@@ -4,18 +4,16 @@ import com.lamdangfixbug.qmshoe.auth.payload.request.ChangePasswordRequest;
 import com.lamdangfixbug.qmshoe.exceptions.PasswordDidNotMatchException;
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
 import com.lamdangfixbug.qmshoe.user.entity.Staff;
+import com.lamdangfixbug.qmshoe.user.payload.request.UpdateUserInformationRequest;
+import com.lamdangfixbug.qmshoe.user.payload.response.CustomerResponse;
 import com.lamdangfixbug.qmshoe.user.repository.CustomerRepository;
 import com.lamdangfixbug.qmshoe.user.repository.StaffRepository;
-import com.lamdangfixbug.qmshoe.user.service.CustomerService;
-import com.lamdangfixbug.qmshoe.user.service.StaffService;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -61,5 +59,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Staff staff = (Staff) userDetails;
         staff.setPassword(newPassword);
         staffRepository.save(staff);
+    }
+
+    public void updateUserInformation(UpdateUserInformationRequest request) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (userDetails.getAuthorities().isEmpty()) {
+            Customer customer = (Customer) userDetails;
+            if (request.getName() != null) customer.setName(request.getName());
+            if (request.getPhoneNumber() != null) customer.setPhoneNumber(request.getPhoneNumber());
+            customerRepository.save(customer);
+        } else {
+            Staff staff = (Staff) userDetails;
+            if (request.getName() != null) staff.setName(request.getName());
+            if (request.getPhoneNumber() != null) staff.setPhoneNumber(request.getPhoneNumber());
+            staffRepository.save(staff);
+        }
     }
 }

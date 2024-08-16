@@ -9,5 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface CustomerService {
-    List<CustomerResponse> getAllCustomer(Map<String,Object> params);
+    List<CustomerResponse> getAllCustomer(Map<String, Object> params);
+
+    CustomerResponse me();
 }
