@@ -28,17 +28,23 @@ public class DiscountServiceImpl implements DiscountService {
     @Transactional
     public Discount createDiscount(DiscountRequest discountRequest) {
         Discount discount = discountRepository.save(Discount.builder()
+                .type(discountRequest.getType())
                 .name(discountRequest.getName())
                 .value(discountRequest.getValue())
                 .maxUsage(discountRequest.getMaxUsage())
                 .endAt(discountRequest.getEndAt())
                 .startAt(discountRequest.getStartAt())
+                .isOrderDiscount(discountRequest.isOrderDiscount())
                 .build());
+        List<Product> products = new ArrayList<>();
         for (int productId : discountRequest.getProductIds()) {
             Product p = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Could not find product with id " + productId));
             p.setDiscount(discount);
             productRepository.save(p);
+            products.add(p);
         }
+        discount.setProducts(products);
+        discountRepository.save(discount);
         return discount;
     }
 
@@ -78,7 +84,7 @@ public class DiscountServiceImpl implements DiscountService {
             }
         });
         updatedProducts.forEach(product -> {
-            if(!products.contains(product)) {
+            if (!products.contains(product)) {
                 product.setDiscount(discount);
                 productRepository.save(product);
             }
@@ -89,6 +95,6 @@ public class DiscountServiceImpl implements DiscountService {
 
     @Override
     public List<Discount> getAllOrderDiscounts() {
-        return  discountRepository.findOrderDiscount();
+        return discountRepository.findOrderDiscount();
     }
 }

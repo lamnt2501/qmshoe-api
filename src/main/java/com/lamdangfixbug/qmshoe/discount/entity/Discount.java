@@ -35,9 +35,4 @@ public class Discount {
     @OneToMany(mappedBy = "discount")
     @JsonBackReference
     private List<Product> products;
-
-    @PrePersist
-    protected void onCreate() {
-        isOrderDiscount = products.isEmpty();
-    }
 }
