@@ -41,7 +41,11 @@ public class Order {
     @JoinColumn(name = "address_id",referencedColumnName = "id")
     private Address address;
 
+    @Column(nullable = false)
     private String phoneNumber;
+
+    @Column(nullable = false)
+    private String receiverName;
 
     @OneToMany(mappedBy = "id.orderId",cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;

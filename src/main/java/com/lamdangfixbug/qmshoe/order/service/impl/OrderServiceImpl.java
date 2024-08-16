@@ -87,6 +87,8 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
         String phoneNumber = orderRequest.getPhoneNumber();
         order.setPhoneNumber(phoneNumber == null ? customer.getPhoneNumber() : phoneNumber);
+        String receiverName = orderRequest.getReceiverName();
+        order.setReceiverName(receiverName == null ? customer.getName() : receiverName);
 
         // order items
         for (OrderItemRequest oir : orderRequest.getItems()) {
