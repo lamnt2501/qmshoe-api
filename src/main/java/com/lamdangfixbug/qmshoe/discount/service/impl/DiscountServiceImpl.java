@@ -86,4 +86,9 @@ public class DiscountServiceImpl implements DiscountService {
         discount.setProducts(updatedProducts);
         return discountRepository.save(discount);
     }
+
+    @Override
+    public List<Discount> getAllOrderDiscounts() {
+        return  discountRepository.findOrderDiscount();
+    }
 }

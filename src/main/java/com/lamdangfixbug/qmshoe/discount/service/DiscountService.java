@@ -10,5 +10,5 @@ public interface DiscountService {
     Discount getDiscountById(int id);
     Discount updateDiscount(DiscountRequest discountRequest);
     List<Discount> getAllDiscounts();
-
+    List<Discount> getAllOrderDiscounts();
 }
