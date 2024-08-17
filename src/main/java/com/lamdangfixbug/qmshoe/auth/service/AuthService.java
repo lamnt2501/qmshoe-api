@@ -65,6 +65,7 @@ public class AuthService {
         Customer customer = Customer.builder()
                 .name(req.getName())
                 .email(req.getEmail())
+                .phoneNumber(req.getPhoneNumber())
                 .password(passwordEncoder.encode(req.getPassword()))
                 .build();
 
