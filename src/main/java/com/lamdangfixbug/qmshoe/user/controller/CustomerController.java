@@ -1,14 +1,17 @@
 package com.lamdangfixbug.qmshoe.user.controller;
 
 import com.lamdangfixbug.qmshoe.auth.payload.request.ChangePasswordRequest;
+import com.lamdangfixbug.qmshoe.user.entity.Address;
 import com.lamdangfixbug.qmshoe.user.payload.request.UpdateUserInformationRequest;
 import com.lamdangfixbug.qmshoe.user.payload.response.CustomerResponse;
+import com.lamdangfixbug.qmshoe.user.service.AddressService;
 import com.lamdangfixbug.qmshoe.user.service.CustomerService;
 import com.lamdangfixbug.qmshoe.user.service.impl.UserDetailsServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -16,10 +19,12 @@ import java.util.Map;
 public class CustomerController {
     private final UserDetailsServiceImpl userDetailsService;
     private final CustomerService customerService;
+    private final AddressService addressService;
 
-    public CustomerController(UserDetailsServiceImpl userDetailsService, CustomerService customerService) {
+    public CustomerController(UserDetailsServiceImpl userDetailsService, CustomerService customerService, AddressService addressService) {
         this.userDetailsService = userDetailsService;
         this.customerService = customerService;
+        this.addressService = addressService;
     }
 
     @PostMapping("/changePassword")
@@ -43,5 +48,10 @@ public class CustomerController {
     @GetMapping("/me")
     public ResponseEntity<CustomerResponse> me() {
         return ResponseEntity.ok(customerService.me());
+    }
+
+    @GetMapping("/addresses")
+    public ResponseEntity<List<Address>> getAddresses() {
+        return ResponseEntity.ok(addressService.getAllAddress());
     }
 }
