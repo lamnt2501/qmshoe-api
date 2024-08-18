@@ -82,13 +82,14 @@ public class OrderServiceImpl implements OrderService {
         Customer customer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Cart cart = cartRepository.findByCustomerId(customer.getId()).orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
         Order order = Order.builder().status(OrderStatus.WAITING).customer(customer).build();
-        order = orderRepository.save(order);
-
-        List<OrderItem> orderItems = new ArrayList<>();
         String phoneNumber = orderRequest.getPhoneNumber();
         order.setPhoneNumber(phoneNumber == null ? customer.getPhoneNumber() : phoneNumber);
         String receiverName = orderRequest.getReceiverName();
+        System.out.println(receiverName == null ? customer.getName() : receiverName);
         order.setReceiverName(receiverName == null ? customer.getName() : receiverName);
+        order = orderRepository.save(order);
+
+        List<OrderItem> orderItems = new ArrayList<>();
 
         // order items
         for (OrderItemRequest oir : orderRequest.getItems()) {
