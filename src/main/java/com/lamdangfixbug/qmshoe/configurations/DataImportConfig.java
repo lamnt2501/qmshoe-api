@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import com.lamdangfixbug.qmshoe.product.entity.*;
 import com.lamdangfixbug.qmshoe.product.repository.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ResourceUtils;
 

@@ -3,7 +3,6 @@ package com.lamdangfixbug.qmshoe.auth.service;
 import com.lamdangfixbug.qmshoe.user.entity.Token;
 import com.lamdangfixbug.qmshoe.user.entity.TokenType;
 import com.lamdangfixbug.qmshoe.user.repository.TokenRepository;
-import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

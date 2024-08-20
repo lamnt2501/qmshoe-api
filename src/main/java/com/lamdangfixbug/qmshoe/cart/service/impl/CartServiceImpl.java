@@ -16,9 +16,7 @@ import com.lamdangfixbug.qmshoe.product.entity.ProductOption;
 import com.lamdangfixbug.qmshoe.product.repository.ProductOptionRepository;
 import com.lamdangfixbug.qmshoe.product.repository.ProductRepository;
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
-import kotlin.jvm.internal.SerializedIr;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
