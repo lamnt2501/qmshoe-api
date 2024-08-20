@@ -24,6 +24,9 @@ public class OrderResponse {
     private double total;
     private List<OrderItemRequest> items;
     private String address;
+    private String phoneNumber;
+    private String receiverName;
+    private String paymentStatus;
     private List<TrackingResponse> tracking;
 
     public static OrderResponse from(final Order order) {
@@ -31,6 +34,9 @@ public class OrderResponse {
         return OrderResponse.builder()
                 .orderId(order.getId())
                 .status(order.getStatus().name())
+                .phoneNumber(order.getPhoneNumber())
+                .receiverName(order.getReceiverName())
+                .paymentStatus(order.getPaymentDetails().getStatus().name())
                 .items(order
                         .getOrderItems()
                         .stream()

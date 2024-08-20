@@ -82,10 +82,10 @@ public class OrderServiceImpl implements OrderService {
         Customer customer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Cart cart = cartRepository.findByCustomerId(customer.getId()).orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
         Order order = Order.builder().status(OrderStatus.WAITING).customer(customer).build();
+
         String phoneNumber = orderRequest.getPhoneNumber();
         order.setPhoneNumber(phoneNumber == null ? customer.getPhoneNumber() : phoneNumber);
         String receiverName = orderRequest.getReceiverName();
-        System.out.println(receiverName == null ? customer.getName() : receiverName);
         order.setReceiverName(receiverName == null ? customer.getName() : receiverName);
         order = orderRepository.save(order);
 
@@ -102,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
 
             // check order quantity is larger than inventory
             if (oir.getQuantity() > productOption.getQuantity()) {
-                throw new InsufficientInventoryException(productOption.getSku() + " inventory is not enough");
+                throw new InsufficientInventoryException(productOption.getProduct().getName() + " inventory is not enough");
             }
 
             orderItems.add(

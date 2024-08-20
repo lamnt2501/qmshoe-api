@@ -54,7 +54,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler({InsufficientInventoryException.class})
-    public ResponseEntity<Object> handleInsufficientInventoryException(InsufficientAuthenticationException ex, WebRequest request) {
+    public ResponseEntity<Object> handleInsufficientInventoryException(InsufficientInventoryException ex, WebRequest request) {
         return new ResponseEntity<>(ErrorDetails.builder().message(ex.getMessage()).statusCode(400).build(), HttpStatus.BAD_REQUEST);
     }
 

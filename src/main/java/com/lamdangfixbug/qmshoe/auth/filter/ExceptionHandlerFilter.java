@@ -28,6 +28,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
             exceptionResolver.resolveException(request, response, null, e);
         }
     }
