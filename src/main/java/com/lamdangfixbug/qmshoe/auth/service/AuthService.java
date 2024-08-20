@@ -38,7 +38,7 @@ public class AuthService {
     private final TokenRepository tokenRepository;
     private final EmailService emailService;
     private final StaffRepository staffRepository;
-    @Value(value = "http://localhost:${server.port}/api/v1/auth/reset-password?token=")
+    @Value("${qm.reset-password-url}")
     private String resetPasswordUrl;
 
     public AuthService(CustomerRepository customerRepository,
@@ -73,8 +73,9 @@ public class AuthService {
         cartRepository.save(Cart.builder().customerId(customer.getId()).build());
         String token = jwtService.generateToken(customer, TokenType.ACCESS_TOKEN);
         saveToken(customer, token,TokenType.ACCESS_TOKEN);
-//        String[] customerName = customer.getName().split(" ");
-//        emailService.sendWelcomeEmail(customer.getEmail(),customerName[customerName.length-1]);
+        // send mail welcome to user
+        String[] customerName = customer.getName().split(" ");
+        emailService.sendWelcomeEmail(customer.getEmail(),customerName[customerName.length-1]);
 
         AuthenticationResponse response = new AuthenticationResponse();
         response.setToken(token);

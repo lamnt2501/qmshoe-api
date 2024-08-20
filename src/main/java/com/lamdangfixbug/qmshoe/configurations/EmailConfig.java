@@ -1,6 +1,7 @@
 package com.lamdangfixbug.qmshoe.configurations;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -10,13 +11,22 @@ import java.util.Properties;
 
 @Configuration
 public class EmailConfig {
+    @Value("${spring.mail.username}")
+    private String username;
+    @Value("${spring.mail.password}")
+    private String password;
+    @Value("${spring.mail.host}")
+    private String host;
+    @Value("${spring.mail.port}")
+    private int port;
+
     @Bean
-    JavaMailSender getJavaMailSender(Dotenv dotenv) {
+    JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
-        mailSender.setUsername(dotenv.get("EMAIL_USERNAME"));
-        mailSender.setPassword(dotenv.get("EMAIL_PASSWORD"));
+        mailSender.setHost(host);
+        mailSender.setPort(port);
+        mailSender.setUsername(username);
+        mailSender.setPassword(password);
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");

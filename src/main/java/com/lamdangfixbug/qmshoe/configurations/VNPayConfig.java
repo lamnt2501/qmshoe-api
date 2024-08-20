@@ -3,6 +3,7 @@ package com.lamdangfixbug.qmshoe.configurations;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
@@ -14,15 +15,14 @@ import java.util.*;
 @Getter
 @Component
 public class VNPayConfig {
-    private final String vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    private final String vnp_TmnCode;
-    private final String vnp_HashSecret;
-    private final String returnUrl = "http://localhost:3000";
-
-    public VNPayConfig(Dotenv dotenv) {
-        vnp_TmnCode = dotenv.get("VNP_TMN_CODE");
-        vnp_HashSecret = dotenv.get("VNP_HASH_SECRET");
-    }
+    @Value("${vnp.pay-url}")
+    private  String vnp_PayUrl;
+    @Value("${vnp.tmn-code}")
+    private  String vnp_TmnCode;
+    @Value("${vnp.hash-secret}")
+    private  String vnp_HashSecret;
+    @Value("${vnp.front-end-return-url}")
+    private  String returnUrl;
 
     public String hashAllFields(Map<String,String> fields) {
         List<String> fieldNames = new ArrayList<>(fields.keySet());

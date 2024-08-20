@@ -8,6 +8,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +18,11 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    private final String JWT_SECRET;
+    @Value("${jwt.secret}")
+    private String JWT_SECRET;
     private final TokenRepository tokenRepository;
 
-    public JwtService(Dotenv dotenv, TokenRepository tokenRepository) {
-        JWT_SECRET = dotenv.get("JWT_SECRET");
+    public JwtService(TokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
     }
 
