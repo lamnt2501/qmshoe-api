@@ -12,6 +12,10 @@ import com.lamdangfixbug.qmshoe.payment.service.PaymentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentDetailsRepository paymentDetailsRepository;
@@ -46,5 +50,13 @@ public class PaymentServiceImpl implements PaymentService {
         }
         paymentDetails.setTransactionIdRef(pd.getTransactionIdRef());
         paymentDetailsRepository.save(paymentDetails);
+    }
+
+    @Override
+    public Object getPaymentGateWayUsageRate() {
+        List<?> queryRes = paymentDetailsRepository.getPaymentGateWayUsageRate();
+        Map<Object,Object> res = new HashMap<>();
+        queryRes.stream().map(v->(Object[]) v).forEach(v->res.put(v[0],v[1]));
+        return res;
     }
 }

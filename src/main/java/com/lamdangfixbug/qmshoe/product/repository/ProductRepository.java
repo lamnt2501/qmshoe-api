@@ -32,4 +32,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query(value = "select  p.* from products as p",nativeQuery = true)
     List<Product> getAllProduct(Pageable pageable);
+
+    @Query("select p from Product p ,ProductOption  po where " +
+            "p.id = po.product.id"  +
+            " and po.sku = :sku")
+    Product findBySku(String sku);
 }

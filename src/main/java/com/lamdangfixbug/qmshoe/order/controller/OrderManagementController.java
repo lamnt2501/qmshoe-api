@@ -36,4 +36,14 @@ public class OrderManagementController {
     public ResponseEntity<OrderResponse> updateOrder(@RequestBody UpdateOrderStatusRequest request) {
         return new ResponseEntity<>(OrderResponse.from(orderService.updateOrderAdmin(request)), HttpStatus.OK);
     }
+
+    @GetMapping("/summary")
+    public ResponseEntity<?> summary() {
+        return ResponseEntity.ok(orderService.summary());
+    }
+
+    @GetMapping("/product-best-seller")
+    public ResponseEntity<?> productBestSeller() {
+        return ResponseEntity.ok(orderService.getProductBestSeller());
+    }
 }

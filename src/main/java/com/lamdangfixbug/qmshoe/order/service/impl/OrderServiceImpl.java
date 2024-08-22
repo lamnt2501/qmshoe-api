@@ -1,29 +1,33 @@
 package com.lamdangfixbug.qmshoe.order.service.impl;
 
 import com.lamdangfixbug.qmshoe.cart.entity.Cart;
+import com.lamdangfixbug.qmshoe.cart.entity.CartItem;
 import com.lamdangfixbug.qmshoe.cart.entity.embedded.CartItemPK;
 import com.lamdangfixbug.qmshoe.cart.repository.CartItemRepository;
 import com.lamdangfixbug.qmshoe.cart.repository.CartRepository;
 import com.lamdangfixbug.qmshoe.exceptions.InsufficientInventoryException;
 import com.lamdangfixbug.qmshoe.exceptions.ResourceNotFoundException;
 import com.lamdangfixbug.qmshoe.exceptions.UpdateOrderException;
-import com.lamdangfixbug.qmshoe.order.entity.Order;
-import com.lamdangfixbug.qmshoe.order.entity.OrderItem;
-import com.lamdangfixbug.qmshoe.order.entity.OrderStatus;
-import com.lamdangfixbug.qmshoe.order.entity.OrderStatusTracking;
+import com.lamdangfixbug.qmshoe.order.entity.*;
 import com.lamdangfixbug.qmshoe.order.entity.embedded.OrderItemPK;
 import com.lamdangfixbug.qmshoe.order.payload.request.AddressRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.OrderItemRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.OrderRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.UpdateOrderStatusRequest;
+import com.lamdangfixbug.qmshoe.order.payload.response.OrderSummary;
+import com.lamdangfixbug.qmshoe.order.payload.response.ProductBestSellerResponse;
 import com.lamdangfixbug.qmshoe.order.repository.OrderRepository;
 import com.lamdangfixbug.qmshoe.order.repository.OrderStatusTrackingRepository;
+import com.lamdangfixbug.qmshoe.order.repository.ProductBestSellerRepository;
 import com.lamdangfixbug.qmshoe.order.service.OrderService;
 import com.lamdangfixbug.qmshoe.payment.entity.PaymentDetails;
 import com.lamdangfixbug.qmshoe.payment.entity.PaymentStatus;
 import com.lamdangfixbug.qmshoe.payment.repository.PaymentDetailsRepository;
+import com.lamdangfixbug.qmshoe.product.entity.Product;
 import com.lamdangfixbug.qmshoe.product.entity.ProductOption;
+import com.lamdangfixbug.qmshoe.product.payload.response.ProductOptionResponse;
 import com.lamdangfixbug.qmshoe.product.repository.ProductOptionRepository;
+import com.lamdangfixbug.qmshoe.product.repository.ProductRepository;
 import com.lamdangfixbug.qmshoe.user.entity.Address;
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
 import com.lamdangfixbug.qmshoe.user.repository.AddressRepository;
@@ -34,9 +38,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -47,8 +54,10 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentDetailsRepository paymentDetailsRepository;
     private final CartItemRepository cartItemRepository;
     private final CartRepository cartRepository;
+    private final ProductBestSellerRepository productBestSellerRepository;
+    private final ProductRepository productRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, ProductOptionRepository productOptionRepository, OrderStatusTrackingRepository orderStatusTrackingRepository, AddressRepository addressRepository, PaymentDetailsRepository paymentDetailsRepository, CartItemRepository cartItemRepository, CartRepository cartRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, ProductOptionRepository productOptionRepository, OrderStatusTrackingRepository orderStatusTrackingRepository, AddressRepository addressRepository, PaymentDetailsRepository paymentDetailsRepository, CartItemRepository cartItemRepository, CartRepository cartRepository, ProductBestSellerRepository productBestSellerRepository, ProductRepository productRepository) {
         this.orderRepository = orderRepository;
         this.productOptionRepository = productOptionRepository;
         this.orderStatusTrackingRepository = orderStatusTrackingRepository;
@@ -56,6 +65,8 @@ public class OrderServiceImpl implements OrderService {
         this.paymentDetailsRepository = paymentDetailsRepository;
         this.cartItemRepository = cartItemRepository;
         this.cartRepository = cartRepository;
+        this.productBestSellerRepository = productBestSellerRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -217,6 +228,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public Order updateOrderAdmin(UpdateOrderStatusRequest request) {
         Order order = orderRepository.findById(request.getId()).orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
@@ -253,6 +265,49 @@ public class OrderServiceImpl implements OrderService {
                 .status(request.getStatus())
                 .build());
 
-        return orderRepository.save(order);
+        if (request.getStatus() == OrderStatus.SUCCEEDED){
+            order.getOrderItems().forEach(oi -> {
+                ProductBestSeller p = productBestSellerRepository.findById(oi.getId().getSku())
+                        .orElse(null);
+                if(p != null) {
+                    p.setSold(p.getSold() + oi.getQuantity());
+                    productBestSellerRepository.save(p);
+                }
+                else {
+                    productBestSellerRepository.save(ProductBestSeller.builder().sku(oi.getId().getSku()).sold(oi.getQuantity()).build());
+                }
+            });
+        }
+
+            return orderRepository.save(order);
+    }
+
+    @Override
+    public OrderSummary summary() {
+        LocalDateTime now = LocalDateTime.now();
+        OrderSummary.OrderSummaryBuilder builder = OrderSummary.builder();
+        builder.totalOrder(orderRepository.countByCreatedAtBetween(now.minusYears(10), now));
+        builder.todayOrder(orderRepository.countByCreatedAtBetween(LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), 0, 0), now));
+        builder.successfulOrder(orderRepository.countByStatusAndCreatedAtBetween(OrderStatus.SUCCEEDED, now.minusYears(2), now));
+        builder.pendingOrder(orderRepository.countByStatusAndCreatedAtBetween(OrderStatus.WAITING, now.minusYears(2), now));
+        builder.cancelledOrder(orderRepository.countByStatusAndCreatedAtBetween(OrderStatus.CANCEL, now.minusYears(2), now));
+        return builder.build();
+    }
+
+    @Override
+    public List<ProductBestSellerResponse> getProductBestSeller() {
+        List <ProductBestSeller> productBestSellers = productBestSellerRepository.getProductBestSeller();
+        List < ProductBestSellerResponse> response = new ArrayList<>();
+        for (ProductBestSeller productBestSeller : productBestSellers) {
+            ProductOption po = productOptionRepository.findBySku(productBestSeller.getSku()).orElseThrow(() -> new ResourceNotFoundException("Product option not found"));
+            response.add(ProductBestSellerResponse.builder()
+                            .sku(po.getSku())
+                            .price(po.getPrice())
+                            .name(po.getProduct().getName())
+                            .imageUrl(po.getProduct().getProductImages().stream().filter(i-> Objects.equals(i.getColor().getId(), po.getColor().getId())).toList().getFirst().getUrl())
+                            .sold(productBestSeller.getSold())
+                    .build());
+        }
+        return response;
     }
 }
