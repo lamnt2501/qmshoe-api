@@ -34,3 +34,5 @@ build/
 
 ## Env ##
 .env
+
+./src/main/resources/data.json

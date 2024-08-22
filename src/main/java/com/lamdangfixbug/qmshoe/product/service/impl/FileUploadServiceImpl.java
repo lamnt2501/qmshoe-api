@@ -33,7 +33,8 @@ public class FileUploadServiceImpl implements FileUploadService {
         Map params1 = ObjectUtils.asMap(
                 "use_filename", false,
                 "unique_filename", false,
-                "overwrite", false
+                "overwrite", false,
+                "folder", "qmshop"
         );
 
         try {

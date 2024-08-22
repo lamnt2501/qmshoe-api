@@ -18,7 +18,7 @@ spring:
     host: ${EMAIL_SERVER_HOST}
     port: ${EMAIL_SERVER_PORT}
 server:
-  port: 80
+  port: 8080
 
 cloudinary:
   url: ${CLOUDINARY_URL}
