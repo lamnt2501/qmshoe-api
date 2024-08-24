@@ -2,6 +2,7 @@ package com.lamdangfixbug.qmshoe.order.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lamdangfixbug.qmshoe.order.entity.Order;
+import com.lamdangfixbug.qmshoe.order.payload.mapper.OrderMapper;
 import com.lamdangfixbug.qmshoe.order.payload.request.OrderRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.UpdateOrderStatusRequest;
 import com.lamdangfixbug.qmshoe.order.payload.response.OrderResponse;
@@ -23,20 +24,21 @@ import java.util.Map;
 public class OrderController {
     private final OrderService orderService;
     private final VNPayService vnPayService;
-
-    public OrderController(OrderService orderService, VNPayService vnPayService) {
+    private final OrderMapper orderMapper;
+    public OrderController(OrderService orderService, VNPayService vnPayService, OrderMapper orderMapper) {
         this.orderService = orderService;
         this.vnPayService = vnPayService;
+        this.orderMapper = orderMapper;
     }
 
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getAllOrder(@RequestParam Map<String, Object> params) {
-        return ResponseEntity.ok(orderService.getAllOrders(params).stream().map(OrderResponse::from).toList());
+        return ResponseEntity.ok(orderService.getAllOrders(params).stream().map(orderMapper::map).toList());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Integer id) {
-        return ResponseEntity.ok(OrderResponse.from(orderService.getOrder(id)));
+        return ResponseEntity.ok(orderMapper.map(orderService.getOrder(id)));
     }
 
     @PostMapping
@@ -64,6 +66,6 @@ public class OrderController {
 
     @PatchMapping
     public ResponseEntity<OrderResponse> updateOrder(@RequestBody UpdateOrderStatusRequest request) {
-        return new ResponseEntity<>(OrderResponse.from(orderService.updateOrder(request)), HttpStatus.OK);
+        return new ResponseEntity<>(orderMapper.map(orderService.updateOrder(request)), HttpStatus.OK);
     }
 }

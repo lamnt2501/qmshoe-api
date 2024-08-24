@@ -1,6 +1,7 @@
 package com.lamdangfixbug.qmshoe.order.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lamdangfixbug.qmshoe.order.payload.mapper.OrderMapper;
 import com.lamdangfixbug.qmshoe.order.payload.request.OrderRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.UpdateOrderStatusRequest;
 import com.lamdangfixbug.qmshoe.order.payload.response.OrderResponse;
@@ -17,24 +18,25 @@ import java.util.Map;
 @RequestMapping("/api/v1/management/orders")
 public class OrderManagementController {
     private final OrderService orderService;
-
-    public OrderManagementController(OrderService orderService) {
+    private final OrderMapper orderMapper;
+    public OrderManagementController(OrderService orderService, OrderMapper orderMapper) {
         this.orderService = orderService;
+        this.orderMapper = orderMapper;
     }
 
     @GetMapping
     public ResponseEntity<List<OrderResponse>> getAllOrder(@RequestParam Map<String, Object> params) {
-        return ResponseEntity.ok(orderService.getAllOrdersAdmin(params).stream().map(OrderResponse::from).toList());
+        return ResponseEntity.ok(orderService.getAllOrdersAdmin(params).stream().map(orderMapper::map).toList());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Integer id) {
-        return ResponseEntity.ok(OrderResponse.from(orderService.getOrderAdmin(id)));
+        return ResponseEntity.ok(orderMapper.map(orderService.getOrderAdmin(id)));
     }
 
     @PatchMapping
     public ResponseEntity<OrderResponse> updateOrder(@RequestBody UpdateOrderStatusRequest request) {
-        return new ResponseEntity<>(OrderResponse.from(orderService.updateOrderAdmin(request)), HttpStatus.OK);
+        return new ResponseEntity<>(orderMapper.map(orderService.updateOrderAdmin(request)), HttpStatus.OK);
     }
 
     @GetMapping("/summary")
