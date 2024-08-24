@@ -72,4 +72,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorDetails> handleInvalidTokenException(InvalidTokenException ex, WebRequest request) {
         return new ResponseEntity<>(ErrorDetails.builder().message(ex.getMessage()).statusCode(400).build(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(UpdatePaymentException.class)
+    public ResponseEntity<ErrorDetails> handleUpdatePaymentException(UpdatePaymentException ex, WebRequest request) {
+        return new ResponseEntity<>(ErrorDetails.builder().message(ex.getMessage()).statusCode(400).build(), HttpStatus.BAD_REQUEST);
+    }
 }

@@ -7,6 +7,7 @@ import com.lamdangfixbug.qmshoe.product.repository.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ResourceUtils;
 
@@ -38,7 +39,7 @@ public class DataImportConfig {
     }
 
 
-//        @Bean
+//  @Bean
     CommandLineRunner commandLineRunner() {
         return args -> loadData();
     }

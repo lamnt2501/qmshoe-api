@@ -7,6 +7,8 @@ import com.lamdangfixbug.qmshoe.cart.entity.Cart;
 import com.lamdangfixbug.qmshoe.cart.repository.CartRepository;
 import com.lamdangfixbug.qmshoe.exceptions.EmailAlreadyExistException;
 import com.lamdangfixbug.qmshoe.exceptions.InvalidTokenException;
+import com.lamdangfixbug.qmshoe.order.entity.TopCustomer;
+import com.lamdangfixbug.qmshoe.order.repository.TopCustomerRepository;
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
 import com.lamdangfixbug.qmshoe.user.entity.Staff;
 import com.lamdangfixbug.qmshoe.user.entity.Token;
@@ -38,6 +40,7 @@ public class AuthService {
     private final TokenRepository tokenRepository;
     private final EmailService emailService;
     private final StaffRepository staffRepository;
+    private final TopCustomerRepository topCustomerRepository;
     @Value("${qm.reset-password-url}")
     private String resetPasswordUrl;
 
@@ -45,7 +48,7 @@ public class AuthService {
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
                        JwtService jwtService,
-                       UserDetailsService userDetailsService, CartRepository cartRepository, TokenRepository tokenRepository, EmailService emailService, StaffRepository staffRepository) {
+                       UserDetailsService userDetailsService, CartRepository cartRepository, TokenRepository tokenRepository, EmailService emailService, StaffRepository staffRepository, TopCustomerRepository topCustomerRepository) {
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -55,6 +58,7 @@ public class AuthService {
         this.tokenRepository = tokenRepository;
         this.emailService = emailService;
         this.staffRepository = staffRepository;
+        this.topCustomerRepository = topCustomerRepository;
     }
 
     public AuthenticationResponse register(RegisterRequest req) {
@@ -70,6 +74,7 @@ public class AuthService {
                 .build();
 
         customerRepository.save(customer);
+        topCustomerRepository.save(TopCustomer.builder().customer(customer).spend(0).build());
         cartRepository.save(Cart.builder().customerId(customer.getId()).build());
         String token = jwtService.generateToken(customer, TokenType.ACCESS_TOKEN);
         saveToken(customer, token,TokenType.ACCESS_TOKEN);
@@ -90,7 +95,7 @@ public class AuthService {
         );
         UserDetails userDetails = userDetailsService.loadUserByUsername(req.getEmail());
         String token = jwtService.generateToken(userDetails,TokenType.ACCESS_TOKEN);
-        revokeAllToken(userDetails);
+//        revokeAllToken(userDetails);
         saveToken(userDetails, token, TokenType.ACCESS_TOKEN);
         AuthenticationResponse response = new AuthenticationResponse();
         response.setToken(token);

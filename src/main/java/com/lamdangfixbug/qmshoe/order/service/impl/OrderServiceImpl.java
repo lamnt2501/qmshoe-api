@@ -16,16 +16,19 @@ import com.lamdangfixbug.qmshoe.order.payload.request.OrderRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.UpdateOrderStatusRequest;
 import com.lamdangfixbug.qmshoe.order.payload.response.OrderSummary;
 import com.lamdangfixbug.qmshoe.order.payload.response.ProductBestSellerResponse;
+
+import com.lamdangfixbug.qmshoe.order.payload.response.TopCustomerResponse;
 import com.lamdangfixbug.qmshoe.order.repository.OrderRepository;
 import com.lamdangfixbug.qmshoe.order.repository.OrderStatusTrackingRepository;
 import com.lamdangfixbug.qmshoe.order.repository.ProductBestSellerRepository;
+import com.lamdangfixbug.qmshoe.order.repository.TopCustomerRepository;
 import com.lamdangfixbug.qmshoe.order.service.OrderService;
 import com.lamdangfixbug.qmshoe.payment.entity.PaymentDetails;
 import com.lamdangfixbug.qmshoe.payment.entity.PaymentStatus;
 import com.lamdangfixbug.qmshoe.payment.repository.PaymentDetailsRepository;
-import com.lamdangfixbug.qmshoe.product.entity.Product;
+
 import com.lamdangfixbug.qmshoe.product.entity.ProductOption;
-import com.lamdangfixbug.qmshoe.product.payload.response.ProductOptionResponse;
+
 import com.lamdangfixbug.qmshoe.product.repository.ProductOptionRepository;
 import com.lamdangfixbug.qmshoe.product.repository.ProductRepository;
 import com.lamdangfixbug.qmshoe.user.entity.Address;
@@ -56,8 +59,9 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final ProductBestSellerRepository productBestSellerRepository;
     private final ProductRepository productRepository;
+    private final TopCustomerRepository topCustomerRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, ProductOptionRepository productOptionRepository, OrderStatusTrackingRepository orderStatusTrackingRepository, AddressRepository addressRepository, PaymentDetailsRepository paymentDetailsRepository, CartItemRepository cartItemRepository, CartRepository cartRepository, ProductBestSellerRepository productBestSellerRepository, ProductRepository productRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, ProductOptionRepository productOptionRepository, OrderStatusTrackingRepository orderStatusTrackingRepository, AddressRepository addressRepository, PaymentDetailsRepository paymentDetailsRepository, CartItemRepository cartItemRepository, CartRepository cartRepository, ProductBestSellerRepository productBestSellerRepository, ProductRepository productRepository, TopCustomerRepository topCustomerRepository) {
         this.orderRepository = orderRepository;
         this.productOptionRepository = productOptionRepository;
         this.orderStatusTrackingRepository = orderStatusTrackingRepository;
@@ -67,6 +71,7 @@ public class OrderServiceImpl implements OrderService {
         this.cartRepository = cartRepository;
         this.productBestSellerRepository = productBestSellerRepository;
         this.productRepository = productRepository;
+        this.topCustomerRepository = topCustomerRepository;
     }
 
     @Override
@@ -265,22 +270,24 @@ public class OrderServiceImpl implements OrderService {
                 .status(request.getStatus())
                 .build());
 
-        if (request.getStatus() == OrderStatus.SUCCEEDED){
+        if (request.getStatus() == OrderStatus.SUCCEEDED) {
             order.getOrderItems().forEach(oi -> {
                 ProductBestSeller p = productBestSellerRepository.findById(oi.getId().getSku())
                         .orElse(null);
-                if(p != null) {
+                if (p != null) {
                     p.setSold(p.getSold() + oi.getQuantity());
                     productBestSellerRepository.save(p);
-                }
-                else {
+                } else {
                     productBestSellerRepository.save(ProductBestSeller.builder().sku(oi.getId().getSku()).sold(oi.getQuantity()).build());
                 }
             });
+
         }
 
-            return orderRepository.save(order);
+        return orderRepository.save(order);
     }
+
+
 
     @Override
     public OrderSummary summary() {
@@ -296,18 +303,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<ProductBestSellerResponse> getProductBestSeller() {
-        List <ProductBestSeller> productBestSellers = productBestSellerRepository.getProductBestSeller();
-        List < ProductBestSellerResponse> response = new ArrayList<>();
+        List<ProductBestSeller> productBestSellers = productBestSellerRepository.getProductBestSeller();
+        List<ProductBestSellerResponse> response = new ArrayList<>();
         for (ProductBestSeller productBestSeller : productBestSellers) {
             ProductOption po = productOptionRepository.findBySku(productBestSeller.getSku()).orElseThrow(() -> new ResourceNotFoundException("Product option not found"));
             response.add(ProductBestSellerResponse.builder()
-                            .sku(po.getSku())
-                            .price(po.getPrice())
-                            .name(po.getProduct().getName())
-                            .imageUrl(po.getProduct().getProductImages().stream().filter(i-> Objects.equals(i.getColor().getId(), po.getColor().getId())).toList().getFirst().getUrl())
-                            .sold(productBestSeller.getSold())
+                    .sku(po.getSku())
+                    .price(po.getPrice())
+                    .name(po.getProduct().getName())
+                    .imageUrl(po.getProduct().getProductImages().stream().filter(i -> Objects.equals(i.getColor().getId(), po.getColor().getId())).toList().getFirst().getUrl())
+                    .sold(productBestSeller.getSold())
                     .build());
         }
         return response;
+    }
+
+    @Override
+    public List<TopCustomerResponse> getTopCustomer() {
+        return topCustomerRepository.getTopCustomer().stream().map(TopCustomerResponse::from).toList();
     }
 }

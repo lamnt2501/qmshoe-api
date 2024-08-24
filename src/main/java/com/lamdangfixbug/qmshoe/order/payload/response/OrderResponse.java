@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -27,6 +28,8 @@ public class OrderResponse {
     private String phoneNumber;
     private String receiverName;
     private String paymentStatus;
+    private LocalDateTime createdAt;
+    private String customerName;
     private List<TrackingResponse> tracking;
 
     public static OrderResponse from(final Order order) {
@@ -37,6 +40,8 @@ public class OrderResponse {
                 .phoneNumber(order.getPhoneNumber())
                 .receiverName(order.getReceiverName())
                 .paymentStatus(order.getPaymentDetails().getStatus().name())
+                .createdAt(order.getCreatedAt())
+                .customerName(order.getCustomer().getName())
                 .items(order
                         .getOrderItems()
                         .stream()

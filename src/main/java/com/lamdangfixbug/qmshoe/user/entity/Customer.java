@@ -30,6 +30,7 @@ public class Customer implements UserDetails {
     @Column(nullable = false)
     private String password;
     private String phoneNumber;
+    private String avtUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -53,4 +54,5 @@ public class Customer implements UserDetails {
     public String getUsername() {
         return this.email;
     }
+
 }

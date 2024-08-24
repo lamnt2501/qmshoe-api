@@ -2,7 +2,6 @@ package com.lamdangfixbug.qmshoe.order.repository;
 
 import com.lamdangfixbug.qmshoe.order.entity.Order;
 import com.lamdangfixbug.qmshoe.order.entity.OrderStatus;
-import com.lamdangfixbug.qmshoe.product.entity.Product;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

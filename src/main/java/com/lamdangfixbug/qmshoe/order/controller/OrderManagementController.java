@@ -46,4 +46,9 @@ public class OrderManagementController {
     public ResponseEntity<?> productBestSeller() {
         return ResponseEntity.ok(orderService.getProductBestSeller());
     }
+
+    @GetMapping("/top-customer")
+    public ResponseEntity<?> topCustomer() {
+        return ResponseEntity.ok(orderService.getTopCustomer());
+    }
 }
