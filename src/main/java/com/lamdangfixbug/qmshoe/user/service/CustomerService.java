@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface CustomerService {
     List<CustomerResponse> getAllCustomer(Map<String, Object> params);
-
     CustomerResponse me();
+    CustomerResponse getCustomer(int id);
+    CustomerResponse getCustomer(String email);
 }

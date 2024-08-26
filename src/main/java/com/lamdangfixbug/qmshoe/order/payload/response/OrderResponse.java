@@ -7,6 +7,7 @@ import com.lamdangfixbug.qmshoe.order.entity.OrderStatusTracking;
 import com.lamdangfixbug.qmshoe.order.payload.mapper.OrderItemMapper;
 import com.lamdangfixbug.qmshoe.order.payload.request.AddressRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.OrderItemRequest;
+import com.lamdangfixbug.qmshoe.payment.entity.PaymentMethod;
 import com.lamdangfixbug.qmshoe.user.entity.Address;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,8 +30,10 @@ public class OrderResponse {
     private String phoneNumber;
     private String receiverName;
     private String paymentStatus;
+    private PaymentMethod paymentMethod;
     private LocalDateTime createdAt;
     private String customerName;
+    private String email;
     private List<TrackingResponse> tracking;
 
 }

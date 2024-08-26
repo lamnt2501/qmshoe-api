@@ -1,5 +1,6 @@
 package com.lamdangfixbug.qmshoe.user.service.impl;
 
+import com.lamdangfixbug.qmshoe.exceptions.ResourceNotFoundException;
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
 import com.lamdangfixbug.qmshoe.user.payload.response.CustomerResponse;
 import com.lamdangfixbug.qmshoe.user.repository.CustomerRepository;
@@ -31,5 +32,16 @@ public class CustomerServiceImpl implements CustomerService {
         UserDetails userDetails = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         Customer customer = (Customer) userDetails;
         return CustomerResponse.from(customer);
+    }
+
+    @Override
+    public CustomerResponse getCustomer(int id) {
+        return CustomerResponse.from(customerRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Customer with id " + id + " not found")));
+    }
+
+    @Override
+    public CustomerResponse getCustomer(String email) {
+
+        return CustomerResponse.from(customerRepository.findByEmail(email).orElseThrow(()->new ResourceNotFoundException("Customer with email " + email + " not found")));
     }
 }

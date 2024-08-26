@@ -255,7 +255,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(request.getStatus());
         String message = request.getMessage();
 
-        if (message == null) {
+        if (message == null || message.isBlank()) {
             message = switch (request.getStatus()) {
                 case SUCCEEDED -> "Order delivered succeed!";
                 case SHIPPING -> "Your order is being shipped to you!";

@@ -15,6 +15,7 @@ public class CustomerResponse {
     private String name;
     private String email;
     private String phone;
+    private String avtUrl;
 
     public static CustomerResponse from(Customer customer) {
         return CustomerResponse.builder()
@@ -22,6 +23,7 @@ public class CustomerResponse {
                 .name(customer.getName())
                 .email(customer.getEmail())
                 .phone(customer.getPhoneNumber())
+                .avtUrl(customer.getAvtUrl())
                 .build();
     }
 

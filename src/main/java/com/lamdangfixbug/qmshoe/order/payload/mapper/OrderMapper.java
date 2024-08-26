@@ -26,6 +26,8 @@ public class OrderMapper {
                 .paymentStatus(order.getPaymentDetails().getStatus().name())
                 .createdAt(order.getCreatedAt())
                 .customerName(order.getCustomer().getName())
+                .email(order.getCustomer().getEmail())
+                .paymentMethod(order.getPaymentDetails().getPaymentMethod())
                 .items(order
                         .getOrderItems()
                         .stream()
@@ -34,7 +36,7 @@ public class OrderMapper {
                         ).toList()
                 )
                 .total(order.getTotal())
-                .address(String.join(", ", a.getSpecificAddress(), a.getDistrict(), a.getCity()))
+                .address(String.join(", ", a.getSpecificAddress(),a.getWard(), a.getDistrict(), a.getCity()))
                 .tracking(order.getOrderStatusTracking().stream().map(TrackingResponse::from).toList())
                 .build();
     }
