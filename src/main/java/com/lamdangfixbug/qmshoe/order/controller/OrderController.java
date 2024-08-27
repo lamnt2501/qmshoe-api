@@ -60,6 +60,7 @@ public class OrderController {
             response.put("Message", "Created Order Successfully");
             response.put("StatusCode", String.valueOf(HttpStatus.OK.value()));
         }
+        response.put("OrderId", String.valueOf(createdOrder.getId()));
         return ResponseEntity.ok(response);
     }
 
