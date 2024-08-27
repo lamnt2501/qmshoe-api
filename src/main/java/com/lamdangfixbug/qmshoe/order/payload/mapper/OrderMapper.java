@@ -1,6 +1,7 @@
 package com.lamdangfixbug.qmshoe.order.payload.mapper;
 
 import com.lamdangfixbug.qmshoe.order.entity.Order;
+import com.lamdangfixbug.qmshoe.order.payload.request.AddressRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.OrderItemRequest;
 import com.lamdangfixbug.qmshoe.order.payload.response.OrderResponse;
 import com.lamdangfixbug.qmshoe.order.payload.response.TrackingResponse;
@@ -36,7 +37,8 @@ public class OrderMapper {
                         ).toList()
                 )
                 .total(order.getTotal())
-                .address(String.join(", ", a.getSpecificAddress(),a.getWard(), a.getDistrict(), a.getCity()))
+                .address(AddressRequest.builder().specificAddress(a.getSpecificAddress()).city(a.getCity())
+                        .district(a.getDistrict()).ward(a.getDistrict()).build())
                 .tracking(order.getOrderStatusTracking().stream().map(TrackingResponse::from).toList())
                 .build();
     }

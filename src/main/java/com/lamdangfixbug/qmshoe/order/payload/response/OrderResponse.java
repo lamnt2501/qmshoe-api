@@ -26,7 +26,7 @@ public class OrderResponse {
     private String status;
     private double total;
     private List<OrderItemResponse> items;
-    private String address;
+    private AddressRequest address;
     private String phoneNumber;
     private String receiverName;
     private String paymentStatus;

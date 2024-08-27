@@ -34,6 +34,7 @@ public class Product {
     @ManyToOne
     private Brand brand;
 
+    private boolean isActive;
     @ManyToMany
     @JoinTable(
             joinColumns = @JoinColumn(name = "product_id"),
