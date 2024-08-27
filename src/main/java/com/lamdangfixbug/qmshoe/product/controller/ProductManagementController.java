@@ -1,7 +1,6 @@
 package com.lamdangfixbug.qmshoe.product.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lamdangfixbug.qmshoe.product.entity.Product;
 import com.lamdangfixbug.qmshoe.product.payload.request.ProductOptionRequest;
 import com.lamdangfixbug.qmshoe.product.payload.request.ProductRequest;
 import com.lamdangfixbug.qmshoe.product.payload.response.ProductOptionResponse;
@@ -13,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,6 +24,16 @@ public class ProductManagementController {
     public ProductManagementController(ProductService productService, ProductOptionService productOptionService) {
         this.productService = productService;
         this.productOptionService = productOptionService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProductResponse>> getProducts(@RequestParam Map<String,Object> params) {
+        return ResponseEntity.ok(productService.findAllProducts(params).stream().map(ProductResponse::from).toList());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponse> getProduct(@PathVariable int id) {
+        return ResponseEntity.ok(ProductResponse.from(productService.findProductById(id)));
     }
 
     @PostMapping

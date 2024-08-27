@@ -22,6 +22,7 @@ public class ProductResponse {
     private List<ProductOptionResponse> options;
     private List<ProductImageResponse> images;
     private double avgRatings;
+    private LocalDateTime createdAt;
 
     public static ProductResponse from(final Product product) {
         ProductResponseBuilder builder = ProductResponse.builder();
@@ -31,6 +32,7 @@ public class ProductResponse {
                 .slug(product.getSlug())
                 .brand(product.getBrand().getName())
                 .avgRatings(product.getAvgRatings())
+                .createdAt(product.getCreatedAt())
                 .categories(
                         product.getCategories().stream().map(Category::getName).toArray(String[]::new)
                 );

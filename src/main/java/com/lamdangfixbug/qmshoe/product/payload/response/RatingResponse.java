@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -15,6 +17,8 @@ public class RatingResponse {
     private double rating;
     private String comment;
     private String by;
+    private String avtUrl;
+    private LocalDateTime createdAt;
 
     public static RatingResponse from(final Rating rating) {
         return RatingResponse.builder()
@@ -22,6 +26,8 @@ public class RatingResponse {
                 .rating(rating.getRatingValue())
                 .comment(rating.getComment())
                 .by(rating.getCustomer().getName())
+                .avtUrl(rating.getCustomer().getAvtUrl())
+                .createdAt(rating.getCreatedAt())
                 .build();
     }
 }
