@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,9 +42,18 @@ public class ProductManagementController {
         return new ResponseEntity<>(ProductResponse.from(productService.createProduct(productRequest)), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(@PathVariable int id, @RequestBody ProductRequest productRequest) {
         return new ResponseEntity<>(ProductResponse.from(productService.updateProduct(id,productRequest)), HttpStatus.OK);
+    }
+
+    @PatchMapping("/a/{id}")
+    public ResponseEntity<?> activeProduct(@PathVariable int id,@RequestParam boolean active) {
+        productService.activeProduct(id,active);
+        Map<String,String> res = new HashMap<>();
+                res.put("message","update success!");
+                res.put("statusCode","200");
+        return ResponseEntity.ok(res);
     }
 
     //--------------
