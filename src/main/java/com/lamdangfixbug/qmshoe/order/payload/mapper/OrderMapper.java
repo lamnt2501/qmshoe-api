@@ -38,7 +38,7 @@ public class OrderMapper {
                 )
                 .total(order.getTotal())
                 .address(AddressRequest.builder().specificAddress(a.getSpecificAddress()).city(a.getCity())
-                        .district(a.getDistrict()).ward(a.getDistrict()).build())
+                        .district(a.getDistrict()).ward(a.getWard()).build())
                 .tracking(order.getOrderStatusTracking().stream().map(TrackingResponse::from).toList())
                 .build();
     }
