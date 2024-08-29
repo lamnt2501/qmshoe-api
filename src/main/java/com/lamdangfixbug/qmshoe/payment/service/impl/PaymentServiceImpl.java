@@ -59,7 +59,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         if(pd.getStatus() == PaymentStatus.PAID) {
             Customer customer = (orderService.getOrderAdmin(paymentDetails.getOrderId()).getCustomer());
-            TopCustomer c = topCustomerRepository.findById(customer.getId()).orElse(null);
+            TopCustomer c = topCustomerRepository.findTopCustomerByCustomer_Id(customer.getId()).orElse(null);
             if (c != null) {
                 c.setSpend(c.getSpend() + paymentDetails.getAmount());
                 c.setMemberShipClass(memberShipClassCalculate(c.getSpend()));
