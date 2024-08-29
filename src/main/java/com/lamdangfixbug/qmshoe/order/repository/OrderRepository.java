@@ -16,9 +16,9 @@ public interface OrderRepository extends JpaRepository<Order,Integer> {
     @Query(value = "select o.* from orders o where o.customer_id =  :customerId",nativeQuery = true)
     Page<Order> findByCustomer(int customerId,Pageable pageable);
 
-    @NotNull
-    @Query(value = "select o.* from orders as o",nativeQuery = true)
-    Page<Order> findAll(@NotNull Pageable pageable);
+
+    @Query(value = "select id, created_at, phone_number, receiver_name, status, total, updated_at, address_id, customer_id, payment_details_id from orders as o",nativeQuery = true)
+    Page<Order> findAllOrder( Pageable pageable);
 
     Optional<Order> findByIdAndCustomer_Id(int id,int customerId);
 

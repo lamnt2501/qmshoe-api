@@ -1,23 +1,12 @@
 package com.lamdangfixbug.qmshoe.product.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lamdangfixbug.qmshoe.product.entity.Product;
-import com.lamdangfixbug.qmshoe.product.entity.ProductOption;
-import com.lamdangfixbug.qmshoe.product.payload.request.ProductOptionRequest;
-import com.lamdangfixbug.qmshoe.product.payload.request.ProductRequest;
-import com.lamdangfixbug.qmshoe.product.payload.response.ProductOptionResponse;
 import com.lamdangfixbug.qmshoe.product.payload.response.ProductResponse;
 import com.lamdangfixbug.qmshoe.product.service.ProductOptionService;
 import com.lamdangfixbug.qmshoe.product.service.ProductService;
-import com.lamdangfixbug.qmshoe.user.entity.Customer;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.Console;
 import java.util.List;
 import java.util.Map;
 

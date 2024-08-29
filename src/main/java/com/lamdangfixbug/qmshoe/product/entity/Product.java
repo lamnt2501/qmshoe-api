@@ -25,7 +25,7 @@ public class Product {
     private String name;
 
     private String slug;
-    @Column(length = 700)
+    @Column(length = 8000)
     private String description;
     private double avgRatings;
     private LocalDateTime createdAt;

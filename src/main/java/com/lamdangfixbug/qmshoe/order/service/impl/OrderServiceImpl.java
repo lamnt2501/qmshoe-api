@@ -224,7 +224,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> getAllOrdersAdmin(Map<String, Object> params) {
         Pageable pageable = Utils.buildPageable(params);
-        return orderRepository.findAll(pageable).getContent();
+        return orderRepository.findAllOrder(pageable).getContent();
     }
 
     @Override

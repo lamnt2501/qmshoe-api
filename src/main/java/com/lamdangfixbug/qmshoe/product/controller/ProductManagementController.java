@@ -1,5 +1,6 @@
 package com.lamdangfixbug.qmshoe.product.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lamdangfixbug.qmshoe.product.payload.request.ProductOptionRequest;
 import com.lamdangfixbug.qmshoe.product.payload.request.ProductRequest;
@@ -43,7 +44,8 @@ public class ProductManagementController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable int id, @RequestBody ProductRequest productRequest) {
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable int id, @RequestBody String req) throws JsonProcessingException {
+        ProductRequest productRequest = new ObjectMapper().readValue(req,ProductRequest.class);
         return new ResponseEntity<>(ProductResponse.from(productService.updateProduct(id,productRequest)), HttpStatus.OK);
     }
 
