@@ -39,7 +39,8 @@ public class ProductManagementController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest productRequest) {
+    public ResponseEntity<ProductResponse> createProduct(@RequestBody String req) throws JsonProcessingException {
+        ProductRequest productRequest = new ObjectMapper().readValue(req,ProductRequest.class);
         return new ResponseEntity<>(ProductResponse.from(productService.createProduct(productRequest)), HttpStatus.CREATED);
     }
 

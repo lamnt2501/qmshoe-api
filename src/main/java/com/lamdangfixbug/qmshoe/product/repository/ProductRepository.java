@@ -19,7 +19,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             value = "select distinct p.* from products as p " +
                     "join product_categories as c on c.product_id = p.id " +
                     "join product_details as pd on pd.product_id = p.id " +
-                    "where p.is_active = 0 " +
+                    "where p.is_active = 1 " +
                     "and c.category_id = :category " +
                     "and pd.price between :minPrice and :maxPrice " +
                     "and pd.color_id in :colors " +
