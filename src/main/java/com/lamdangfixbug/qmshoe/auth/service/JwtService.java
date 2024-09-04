@@ -46,8 +46,8 @@ public class JwtService {
 
     public String generateToken(UserDetails user, TokenType tokenType) {
         Date expiration = switch (tokenType){
-            case ACCESS_TOKEN -> new Date(new Date().getTime() + 1000 * 60 * 60);
-            case REFRESH_TOKEN -> new Date(new Date().getTime() + 1000 * 60 * 60 * 7);
+            case ACCESS_TOKEN -> new Date(new Date().getTime() + 1000 * 60 * 60 * 24);
+            case REFRESH_TOKEN -> new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7);
             case FORGOT_PASSWORD_TOKEN -> new Date(new Date().getTime() + 1000 * 60);
             default -> new Date();
         };

@@ -22,12 +22,16 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @ManyToOne
     @JoinColumn(name = "customer_id",referencedColumnName = "id")
     private Customer customer;
+
     private double total;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
     @Column(insertable = false)
     private LocalDateTime updatedAt;
 
@@ -52,6 +56,9 @@ public class Order {
 
     @OneToMany(mappedBy = "orderId")
     private List<OrderStatusTracking> orderStatusTracking;
+
+//    @Column(nullable = false)
+//    private  LocalDateTime estimatedDeliveryDate;
 
     @PrePersist
     protected void onCreate() {

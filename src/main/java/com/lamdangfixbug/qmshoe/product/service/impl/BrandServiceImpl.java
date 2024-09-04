@@ -37,4 +37,15 @@ private  final FileUploadService fileUploadService;
     public Brand getBrandById(int id) {
         return brandRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Couldn't find brand with id: " + id));
     }
+
+    @Override
+    public Brand updateBrand(int id, BrandRequest brandRequest) {
+        Brand brand = getBrandById(id);
+        String name = brandRequest.getName();
+        if(name!= null && !name.isBlank())brand.setName(brandRequest.getName());
+        String description = brandRequest.getDescription();
+        if(description != null && !description.isBlank())brand.setDescription(brandRequest.getDescription());
+        if(brandRequest.getImage()!=null)brand.setImgUrl((String)fileUploadService.uploadImage(brandRequest.getImage()).get("url"));
+        return brandRepository.save(brand);
+    }
 }

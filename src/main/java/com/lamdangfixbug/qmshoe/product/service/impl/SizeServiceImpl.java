@@ -32,9 +32,9 @@ public class SizeServiceImpl implements SizeService {
 
     @Override
     public Size updateSize(Size size) {
-        if(sizeRepository.existsById(size.getId())) {
-            return sizeRepository.save(size);
-        }
-        throw new ResourceNotFoundException("Couldn't find size with id: " + size.getId());
+        Size s = sizeRepository.findById(size.getId()).orElseThrow(()->new ResourceNotFoundException("Couldn't find size with id: " + size.getId()));
+        s.setSize(size.getSize());
+        s.setDescription(size.getDescription());
+        return sizeRepository.save(s);
     }
 }

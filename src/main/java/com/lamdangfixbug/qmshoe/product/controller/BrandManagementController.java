@@ -18,6 +18,7 @@ public class BrandManagementController {
     public BrandManagementController(BrandService brandService) {
         this.brandService = brandService;
     }
+
     @GetMapping
     public ResponseEntity<List<Brand>> getAllBrands() {
         return new ResponseEntity<>(brandService.getAllBrands(), HttpStatus.OK);
@@ -28,5 +29,13 @@ public class BrandManagementController {
                                              @RequestParam String description,
                                              @RequestParam MultipartFile image) {
         return new ResponseEntity<>(brandService.createBrand(BrandRequest.builder().name(name).description(description).image(image).build()), HttpStatus.CREATED);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateBrand(@RequestParam int id,
+                                         @RequestParam(required = false) String name,
+                                         @RequestParam(required = false) String description,
+                                         @RequestParam(required = false) MultipartFile image) {
+        return new ResponseEntity<>(brandService.updateBrand(id, BrandRequest.builder().name(name).description(description).image(image).build()), HttpStatus.CREATED);
     }
 }

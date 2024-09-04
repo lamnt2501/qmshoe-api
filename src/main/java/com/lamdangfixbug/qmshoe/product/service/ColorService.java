@@ -8,4 +8,5 @@ public interface ColorService {
     Color createColor(Color color);
     Color findColorById(int id);
     List<Color> findAllColors();
+    Color updateColor(Color color);
 }

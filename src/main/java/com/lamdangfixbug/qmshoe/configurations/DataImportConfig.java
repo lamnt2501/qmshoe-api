@@ -2,17 +2,30 @@ package com.lamdangfixbug.qmshoe.configurations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
+import com.lamdangfixbug.qmshoe.order.entity.Order;
+import com.lamdangfixbug.qmshoe.order.entity.TopCustomer;
+import com.lamdangfixbug.qmshoe.order.repository.OrderRepository;
+import com.lamdangfixbug.qmshoe.order.repository.TopCustomerRepository;
 import com.lamdangfixbug.qmshoe.product.entity.*;
 import com.lamdangfixbug.qmshoe.product.repository.*;
+import com.lamdangfixbug.qmshoe.user.entity.Address;
+import com.lamdangfixbug.qmshoe.user.entity.Customer;
+import com.lamdangfixbug.qmshoe.user.entity.Role;
+import com.lamdangfixbug.qmshoe.user.entity.Staff;
+import com.lamdangfixbug.qmshoe.user.repository.CustomerRepository;
+import com.lamdangfixbug.qmshoe.user.repository.StaffRepository;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.time.Instant;
 import java.util.*;
 
 @Configuration
@@ -24,11 +37,16 @@ public class DataImportConfig {
     private final ProductRepository productRepository;
     private final ProductOptionRepository productOptionRepository;
     private final ProductImageRepository productImageRepository;
+    private final CustomerRepository customerRepository;
+    private final TopCustomerRepository topCustomerRepository;
+    private final StaffRepository staffRepository;
+    private final RatingRepository ratingRepository;
+    private final OrderRepository orderRepository;
 
     public DataImportConfig(CategoryRepository categoryRepository, BrandRepository brandRepository,
                             SizeRepository sizeRepository, ColorRepository colorRepository,
                             ProductRepository productRepository, ProductOptionRepository productOptionRepository,
-                            ProductImageRepository productImageRepository) {
+                            ProductImageRepository productImageRepository, CustomerRepository customerRepository, CustomerRepository customerRepository1, TopCustomerRepository topCustomerRepository, StaffRepository staffRepository, RatingRepository ratingRepository, OrderRepository orderRepository) {
         this.categoryRepository = categoryRepository;
         this.brandRepository = brandRepository;
         this.sizeRepository = sizeRepository;
@@ -36,25 +54,49 @@ public class DataImportConfig {
         this.productRepository = productRepository;
         this.productOptionRepository = productOptionRepository;
         this.productImageRepository = productImageRepository;
+        this.customerRepository = customerRepository1;
+        this.topCustomerRepository = topCustomerRepository;
+        this.staffRepository = staffRepository;
+        this.ratingRepository = ratingRepository;
+        this.orderRepository = orderRepository;
     }
 
 
-//  @Bean
+    @Bean
     CommandLineRunner commandLineRunner() {
         return args -> loadData();
     }
 
     private void loadData() {
-        Faker faker = new Faker();
+        Random random = new Random();
+        String password = new BCryptPasswordEncoder().encode("12345678");
+        Faker fakerVn = new Faker(Locale.forLanguageTag("vi"));
+        Faker fakerEn = new Faker();
+
+        staffRepository.save(Staff.builder().email("admin@gmail.com").password(password).name("Liam").role(Role.ADMIN).build());
         try (InputStreamReader stream = new InputStreamReader(new FileInputStream(ResourceUtils.getFile("classpath:data.json")))) {
             StringBuilder sb = new StringBuilder();
+
+            // user
+            List<Customer> customers = new ArrayList<>();
+            for (int i = 1; i <= 100; i++) {
+                Customer c = customerRepository.save(Customer.builder()
+                        .name(fakerVn.name().fullName())
+                        .email(fakerEn.internet().emailAddress())
+                        .phoneNumber("0" + random.nextInt(200000000, 999999999)).password(password).build());
+                customers.add(c);
+                topCustomerRepository.save(TopCustomer.builder().customer(c).spend(0).memberShipClass("").build());
+            }
+
             while (stream.ready()) {
                 sb.append((char) stream.read());
             }
+
             String json = sb.toString();
             ObjectMapper objectMapper = new ObjectMapper();
             ProductJson[] productJsons = objectMapper.readValue(json, ProductJson[].class);
 
+            List<Product> products = new ArrayList<>();
             for (ProductJson productJson : productJsons) {
                 // category
                 for (String c : productJson.getCategory()) {
@@ -67,7 +109,7 @@ public class DataImportConfig {
                     // color
                     if (colorRepository.findByName(o.getColor()).isEmpty()) {
                         colorRepository.save(Color.builder()
-                                .name(o.getColor()).hex(faker.color().hex(true)).build());
+                                .name(o.getColor()).hex(fakerEn.color().hex(true)).build());
                     }
 
                     //size
@@ -95,14 +137,15 @@ public class DataImportConfig {
                         .description(productJson.getDescription())
                         .brand(brandRepository.findByName(productJson.getBrand()).orElse(null))
                         .categories(categories)
+                        .isActive(true)
                         .build());
-
+                products.add(p);
                 //product options
                 for (ProductJsonOption o : productJson.getOptions()) {
                     Color c = colorRepository.findByName(o.getColor()).orElse(null);
                     for (int s : o.getSize()) {
                         List<ProductOption> po = productOptionRepository.findByProductAndColor(p, c);
-                        double price = faker.random().nextInt(345000, 2500000);
+                        double price = fakerEn.random().nextInt(345000, 2500000);
                         if (!po.isEmpty()) {
                             price = po.getFirst().getPrice();
                         }
@@ -110,7 +153,7 @@ public class DataImportConfig {
                                 .price(price)
                                 .product(p)
                                 .size(sizeRepository.findBySize(String.valueOf(s)).orElse(null))
-                                .quantity(faker.random().nextInt(10, 200))
+                                .quantity(fakerEn.random().nextInt(10, 200))
                                 .color(c).build());
                     }
                     // product image
@@ -122,6 +165,30 @@ public class DataImportConfig {
                     }
                 }
             }
+            String[] fakeRatings = {
+                    "Hàng đẹp, đúng mẫu mình thích đúng màu",
+                    "Cũng đẹp, đáng tiền. Lần sau sẽ quay lại",
+                    "Tôi không thấy màu going trên ảnh lắm",
+                    "Mua tặng vợ đẹp hết xảy, vợ khen quá trời",
+                    "Tôi sẽ cho một sao",
+                    "Giao hàng nhanh, nhiều ưu đãi, ủng hộ shop lâu dài",
+                    "Giày bị chật nhưng không kịp đổi hàng :("
+            };
+            for(Product p : products){
+                for(Customer c : customers){
+                    int value = random.nextInt(3,6);
+                    int totalRating = (int)ratingRepository.countByProductId(p.getId());
+                    p.setAvgRatings((p.getAvgRatings()*totalRating+value)/(totalRating+1));
+                    ratingRepository.save(Rating.builder().ratingValue(value)
+                            .productId(p.getId()).customer(c).comment(fakeRatings[random.nextInt(7)])
+                            .build());
+                    productRepository.save(p);
+                }
+            }
+//            for(int i = 1; i<=200; i++){
+//                Order o = orderRepository.save(Order.builder().build());
+//            }
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

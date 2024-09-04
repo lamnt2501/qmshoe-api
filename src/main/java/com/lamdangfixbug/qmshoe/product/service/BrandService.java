@@ -9,6 +9,5 @@ public interface BrandService {
     Brand createBrand(BrandRequest brandRequest);
     List<Brand> getAllBrands();
     Brand getBrandById(int id);
-
-
+    Brand updateBrand(int id, BrandRequest brandRequest);
 }
