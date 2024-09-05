@@ -30,6 +30,7 @@ public class Staff implements UserDetails {
     @Column(nullable = false)
     private String password;
     private String phoneNumber;
+    private String avtUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     @Enumerated(EnumType.STRING)

@@ -9,6 +9,7 @@ import com.lamdangfixbug.qmshoe.user.service.CustomerService;
 import com.lamdangfixbug.qmshoe.user.service.impl.UserDetailsServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,18 +37,27 @@ public class CustomerController {
         return ResponseEntity.ok(res);
     }
 
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<?> updateInformation(@RequestBody UpdateUserInformationRequest request) {
         userDetailsService.updateUserInformation(request);
         Map<String, String> res = new HashMap<>();
-        res.put("Message", "Password changed successfully");
+        res.put("Message", "Update successfully!");
+        res.put("StatusCode", "200");
+        return ResponseEntity.ok(res);
+    }
+
+    @PutMapping("/avatar")
+    public ResponseEntity<?> updateAvatar(@RequestParam MultipartFile avatar) {
+        userDetailsService.changeAvatar(avatar);
+        Map<String, String> res = new HashMap<>();
+        res.put("Message", "Update successfully!");
         res.put("StatusCode", "200");
         return ResponseEntity.ok(res);
     }
 
     @GetMapping("/me")
-    public ResponseEntity<CustomerResponse> me() {
-        return ResponseEntity.ok(customerService.me());
+    public ResponseEntity<?> me() {
+        return ResponseEntity.ok(userDetailsService.me());
     }
 
     @GetMapping("/addresses")
