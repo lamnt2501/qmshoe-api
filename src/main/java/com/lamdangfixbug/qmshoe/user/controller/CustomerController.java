@@ -2,6 +2,7 @@ package com.lamdangfixbug.qmshoe.user.controller;
 
 import com.lamdangfixbug.qmshoe.auth.payload.request.ChangePasswordRequest;
 import com.lamdangfixbug.qmshoe.user.entity.Address;
+import com.lamdangfixbug.qmshoe.user.entity.Customer;
 import com.lamdangfixbug.qmshoe.user.payload.request.UpdateUserInformationRequest;
 import com.lamdangfixbug.qmshoe.user.payload.response.CustomerResponse;
 import com.lamdangfixbug.qmshoe.user.service.AddressService;
@@ -63,5 +64,10 @@ public class CustomerController {
     @GetMapping("/addresses")
     public ResponseEntity<List<Address>> getAddresses() {
         return ResponseEntity.ok(addressService.getAllAddress());
+    }
+
+    @GetMapping("/memberShip")
+    public ResponseEntity<?> getMemberShip() {
+        return ResponseEntity.ok(customerService.myTopCustomer());
     }
 }

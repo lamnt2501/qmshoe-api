@@ -62,7 +62,7 @@ public class DataImportConfig {
     }
 
 
-    @Bean
+//    @Bean
     CommandLineRunner commandLineRunner() {
         return args -> loadData();
     }

@@ -14,6 +14,7 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final FileUploadService fileUploadService;
+
     public CategoryServiceImpl(CategoryRepository categoryRepository, FileUploadService fileUploadService) {
         this.categoryRepository = categoryRepository;
         this.fileUploadService = fileUploadService;
@@ -24,7 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = Category.builder()
                 .name(categoryRequest.getName())
                 .description(categoryRequest.getDescription())
-                .imgUrl(fileUploadService.uploadImage(categoryRequest.getImage()).get("url").toString())
+                .imgUrl(categoryRequest.getImage() != null ? fileUploadService.uploadImage(categoryRequest.getImage()).get("url").toString() : "")
                 .build();
         return categoryRepository.save(category);
     }
@@ -49,6 +50,6 @@ public class CategoryServiceImpl implements CategoryService {
         if (categoryRepository.existsById(category.getId())) {
             return categoryRepository.save(category);
         }
-        throw  new ResourceNotFoundException("Couldn't find category with id: " + category.getId());
+        throw new ResourceNotFoundException("Couldn't find category with id: " + category.getId());
     }
 }

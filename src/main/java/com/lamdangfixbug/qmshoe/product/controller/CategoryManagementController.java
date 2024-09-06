@@ -27,7 +27,7 @@ public class CategoryManagementController {
     @PostMapping
     public ResponseEntity<Category> createCategory(@RequestParam String name,
                                                    @RequestParam String description,
-                                                   @RequestParam MultipartFile image) {
+                                                   @RequestParam(required = false) MultipartFile image) {
         Category category = categoryService.createCategory(
                 CategoryRequest.builder().name(name).description(description).image(image).build()
         );
