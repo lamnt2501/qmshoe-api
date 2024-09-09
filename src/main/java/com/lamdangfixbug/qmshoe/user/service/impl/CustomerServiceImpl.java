@@ -54,4 +54,9 @@ public class CustomerServiceImpl implements CustomerService {
         Customer customer = (Customer) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return TopCustomerResponse.from(topCustomerRepository.findTopCustomerByCustomer_Id(customer.getId()).orElseThrow(()->new ResourceNotFoundException("Top customer with id " + customer.getId() + " not found")));
     }
+
+    @Override
+    public TopCustomerResponse getTopCustomer(int id) {
+        return TopCustomerResponse.from(topCustomerRepository.findTopCustomerByCustomer_Id(id).orElseThrow(()->new ResourceNotFoundException("Top customer with id " + id + " not found")));
+    }
 }

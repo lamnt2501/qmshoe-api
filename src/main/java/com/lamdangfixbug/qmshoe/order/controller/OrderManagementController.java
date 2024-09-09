@@ -1,8 +1,6 @@
 package com.lamdangfixbug.qmshoe.order.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lamdangfixbug.qmshoe.order.payload.mapper.OrderMapper;
-import com.lamdangfixbug.qmshoe.order.payload.request.OrderRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.UpdateOrderStatusRequest;
 import com.lamdangfixbug.qmshoe.order.payload.response.OrderResponse;
 import com.lamdangfixbug.qmshoe.order.service.OrderService;
@@ -10,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +16,7 @@ import java.util.Map;
 public class OrderManagementController {
     private final OrderService orderService;
     private final OrderMapper orderMapper;
+
     public OrderManagementController(OrderService orderService, OrderMapper orderMapper) {
         this.orderService = orderService;
         this.orderMapper = orderMapper;
@@ -32,6 +30,11 @@ public class OrderManagementController {
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getOrderById(@PathVariable Integer id) {
         return ResponseEntity.ok(orderMapper.map(orderService.getOrderAdmin(id)));
+    }
+
+    @GetMapping("/customer/{id}")
+    public ResponseEntity<List<OrderResponse>> getCustomerOrderById(@PathVariable Integer id) {
+        return ResponseEntity.ok(orderService.getOrdersByCustomerId(id));
     }
 
     @PatchMapping

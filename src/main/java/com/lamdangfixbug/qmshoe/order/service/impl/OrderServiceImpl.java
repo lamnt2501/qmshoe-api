@@ -10,10 +10,12 @@ import com.lamdangfixbug.qmshoe.exceptions.ResourceNotFoundException;
 import com.lamdangfixbug.qmshoe.exceptions.UpdateOrderException;
 import com.lamdangfixbug.qmshoe.order.entity.*;
 import com.lamdangfixbug.qmshoe.order.entity.embedded.OrderItemPK;
+import com.lamdangfixbug.qmshoe.order.payload.mapper.OrderMapper;
 import com.lamdangfixbug.qmshoe.order.payload.request.AddressRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.OrderItemRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.OrderRequest;
 import com.lamdangfixbug.qmshoe.order.payload.request.UpdateOrderStatusRequest;
+import com.lamdangfixbug.qmshoe.order.payload.response.OrderResponse;
 import com.lamdangfixbug.qmshoe.order.payload.response.OrderSummary;
 import com.lamdangfixbug.qmshoe.order.payload.response.ProductBestSellerResponse;
 
@@ -35,6 +37,7 @@ import com.lamdangfixbug.qmshoe.user.entity.Address;
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
 import com.lamdangfixbug.qmshoe.user.repository.AddressRepository;
 import com.lamdangfixbug.qmshoe.utils.Utils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -60,8 +63,9 @@ public class OrderServiceImpl implements OrderService {
     private final ProductBestSellerRepository productBestSellerRepository;
     private final ProductRepository productRepository;
     private final TopCustomerRepository topCustomerRepository;
+    private final OrderMapper mapper;
 
-    public OrderServiceImpl(OrderRepository orderRepository, ProductOptionRepository productOptionRepository, OrderStatusTrackingRepository orderStatusTrackingRepository, AddressRepository addressRepository, PaymentDetailsRepository paymentDetailsRepository, CartItemRepository cartItemRepository, CartRepository cartRepository, ProductBestSellerRepository productBestSellerRepository, ProductRepository productRepository, TopCustomerRepository topCustomerRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, ProductOptionRepository productOptionRepository, OrderStatusTrackingRepository orderStatusTrackingRepository, AddressRepository addressRepository, PaymentDetailsRepository paymentDetailsRepository, CartItemRepository cartItemRepository, CartRepository cartRepository, ProductBestSellerRepository productBestSellerRepository, ProductRepository productRepository, TopCustomerRepository topCustomerRepository, OrderMapper mapper) {
         this.orderRepository = orderRepository;
         this.productOptionRepository = productOptionRepository;
         this.orderStatusTrackingRepository = orderStatusTrackingRepository;
@@ -72,6 +76,7 @@ public class OrderServiceImpl implements OrderService {
         this.productBestSellerRepository = productBestSellerRepository;
         this.productRepository = productRepository;
         this.topCustomerRepository = topCustomerRepository;
+        this.mapper = mapper;
     }
 
     @Override
@@ -321,5 +326,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<TopCustomerResponse> getTopCustomer() {
         return topCustomerRepository.getTopCustomer().stream().map(TopCustomerResponse::from).toList();
+    }
+
+    @Override
+    public List<OrderResponse> getOrdersByCustomerId(int customerId) {
+        return orderRepository.findByCustomer_Id(customerId, PageRequest.of(0,20)).stream().map(mapper::map).toList();
     }
 }

@@ -1,5 +1,6 @@
 package com.lamdangfixbug.qmshoe.user.controller;
 
+import com.lamdangfixbug.qmshoe.order.payload.response.TopCustomerResponse;
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
 import com.lamdangfixbug.qmshoe.user.payload.response.CustomerResponse;
 import com.lamdangfixbug.qmshoe.user.service.CustomerService;
@@ -31,5 +32,10 @@ public class CustomerManagementController {
     @PostMapping("/email")
     public ResponseEntity<CustomerResponse> getCustomerByEmail(@RequestParam String email) {
         return ResponseEntity.ok(customerService.getCustomer(email));
+    }
+
+    @GetMapping("/{id}/memberShip")
+    public ResponseEntity<TopCustomerResponse> getCustomerMemberShip(@PathVariable int id  ) {
+        return ResponseEntity.ok(customerService.getTopCustomer(id));
     }
 }

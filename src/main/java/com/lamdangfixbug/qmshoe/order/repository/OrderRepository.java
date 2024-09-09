@@ -25,4 +25,6 @@ public interface OrderRepository extends JpaRepository<Order,Integer> {
     int countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
     int countByStatusAndCreatedAtBetween(OrderStatus status, LocalDateTime start, LocalDateTime end);
 
+    @Query(value = "select * from orders where customer_id = :customerId",nativeQuery = true)
+    List<Order> findByCustomer_Id(int customerId,Pageable pageable);
 }

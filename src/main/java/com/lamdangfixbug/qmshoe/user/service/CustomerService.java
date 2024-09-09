@@ -15,4 +15,5 @@ public interface CustomerService {
     CustomerResponse getCustomer(int id);
     CustomerResponse getCustomer(String email);
     TopCustomerResponse myTopCustomer();
+    TopCustomerResponse getTopCustomer(int id);
 }
