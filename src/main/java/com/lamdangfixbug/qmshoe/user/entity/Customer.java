@@ -30,6 +30,7 @@ public class Customer implements UserDetails {
     @Column(nullable = false)
     private String password;
     private String phoneNumber;
+    @Column(length = 1000)
     private String avtUrl;
     private LocalDateTime birthday;
     @Enumerated(EnumType.STRING)

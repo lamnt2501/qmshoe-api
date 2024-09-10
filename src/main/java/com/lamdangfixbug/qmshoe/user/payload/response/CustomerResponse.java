@@ -1,6 +1,7 @@
 package com.lamdangfixbug.qmshoe.user.payload.response;
 
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
+import com.lamdangfixbug.qmshoe.user.entity.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class CustomerResponse {
     private String email;
     private String phone;
     private String avtUrl;
-    private String gender;
+    private Gender gender;
     private LocalDateTime birthday;
     public static CustomerResponse from(Customer customer) {
         return CustomerResponse.builder()
@@ -28,7 +29,7 @@ public class CustomerResponse {
                 .email(customer.getEmail())
                 .phone(customer.getPhoneNumber())
                 .avtUrl(customer.getAvtUrl())
-                .gender(customer.getGender().name())
+                .gender(customer.getGender())
                 .birthday(customer.getBirthday())
                 .build();
     }
