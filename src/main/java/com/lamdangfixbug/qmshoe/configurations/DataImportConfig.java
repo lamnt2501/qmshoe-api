@@ -10,10 +10,7 @@ import com.lamdangfixbug.qmshoe.order.repository.OrderRepository;
 import com.lamdangfixbug.qmshoe.order.repository.TopCustomerRepository;
 import com.lamdangfixbug.qmshoe.product.entity.*;
 import com.lamdangfixbug.qmshoe.product.repository.*;
-import com.lamdangfixbug.qmshoe.user.entity.Address;
-import com.lamdangfixbug.qmshoe.user.entity.Customer;
-import com.lamdangfixbug.qmshoe.user.entity.Role;
-import com.lamdangfixbug.qmshoe.user.entity.Staff;
+import com.lamdangfixbug.qmshoe.user.entity.*;
 import com.lamdangfixbug.qmshoe.user.repository.CustomerRepository;
 import com.lamdangfixbug.qmshoe.user.repository.StaffRepository;
 import jakarta.validation.constraints.NotNull;
@@ -28,6 +25,8 @@ import org.springframework.util.ResourceUtils;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.*;
 
 @Configuration
@@ -87,6 +86,8 @@ public class DataImportConfig {
                 Customer c = customerRepository.save(Customer.builder()
                         .name(fakerVn.name().fullName())
                         .email(fakerEn.internet().emailAddress())
+                        .birthday(LocalDateTime.of(random.nextInt(1980,2011), Month.of(random.nextInt(1,13)),random.nextInt(1,31),0,0))
+                                .gender(Gender.valueOf(i%2==0?"MALE":"FEMALE"))
                         .phoneNumber("0" + random.nextInt(200000000, 999999999)).password(password).build());
                 customers.add(c);
                 topCustomerRepository.save(TopCustomer.builder().customer(c).spend(0).memberShipClass("").build());
@@ -181,7 +182,7 @@ public class DataImportConfig {
             };
             for(Product p : products){
                 for(Customer c : customers){
-                    int value = random.nextInt(3,6);
+                    int value = random.nextInt(2,6);
                     int totalRating = (int)ratingRepository.countByProductId(p.getId());
                     p.setAvgRatings((p.getAvgRatings()*totalRating+value)/(totalRating+1));
                     ratingRepository.save(Rating.builder().ratingValue(value)
