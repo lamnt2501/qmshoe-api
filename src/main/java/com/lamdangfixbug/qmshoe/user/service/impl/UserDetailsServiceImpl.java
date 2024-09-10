@@ -58,6 +58,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             Customer customer = (Customer) userDetails;
             customer.setPassword(newPassword);
             customerRepository.save(customer);
+            return;
         }
         assert userDetails instanceof Staff;
         Staff staff = (Staff) userDetails;
