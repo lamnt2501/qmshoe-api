@@ -9,10 +9,7 @@ import com.lamdangfixbug.qmshoe.exceptions.EmailAlreadyExistException;
 import com.lamdangfixbug.qmshoe.exceptions.InvalidTokenException;
 import com.lamdangfixbug.qmshoe.order.entity.TopCustomer;
 import com.lamdangfixbug.qmshoe.order.repository.TopCustomerRepository;
-import com.lamdangfixbug.qmshoe.user.entity.Customer;
-import com.lamdangfixbug.qmshoe.user.entity.Staff;
-import com.lamdangfixbug.qmshoe.user.entity.Token;
-import com.lamdangfixbug.qmshoe.user.entity.TokenType;
+import com.lamdangfixbug.qmshoe.user.entity.*;
 import com.lamdangfixbug.qmshoe.user.repository.CustomerRepository;
 import com.lamdangfixbug.qmshoe.user.repository.StaffRepository;
 import com.lamdangfixbug.qmshoe.user.repository.TokenRepository;
@@ -70,6 +67,8 @@ public class AuthService {
                 .name(req.getName())
                 .email(req.getEmail())
                 .phoneNumber(req.getPhoneNumber())
+                .gender(Gender.valueOf(req.getGender()))
+                .birthday(req.getBirthday())
                 .password(passwordEncoder.encode(req.getPassword()))
                 .build();
 

@@ -4,6 +4,7 @@ import com.lamdangfixbug.qmshoe.auth.payload.request.ChangePasswordRequest;
 import com.lamdangfixbug.qmshoe.exceptions.PasswordDidNotMatchException;
 import com.lamdangfixbug.qmshoe.product.service.FileUploadService;
 import com.lamdangfixbug.qmshoe.user.entity.Customer;
+import com.lamdangfixbug.qmshoe.user.entity.Gender;
 import com.lamdangfixbug.qmshoe.user.entity.Staff;
 import com.lamdangfixbug.qmshoe.user.payload.request.UpdateUserInformationRequest;
 import com.lamdangfixbug.qmshoe.user.payload.response.CustomerResponse;
@@ -17,6 +18,8 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -70,10 +73,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String name = request.getName();
         String phone = request.getPhoneNumber();
+        LocalDateTime birthday = request.getBirthday();
+        String gender = request.getGender();
         if (userDetails.getAuthorities().isEmpty()) {
             Customer customer = (Customer) userDetails;
             if (name != null) customer.setName(name);
             if (phone != null) customer.setPhoneNumber(phone);
+            if (birthday != null) customer.setBirthday(birthday);
+            if (gender != null) customer.setGender(Gender.valueOf(gender));
             customerRepository.save(customer);
         } else {
             Staff staff = (Staff) userDetails;
@@ -85,7 +92,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public void changeAvatar(MultipartFile avatar) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String url = (String)fileUploadService.uploadImage(avatar).get("url");
+        String url = (String) fileUploadService.uploadImage(avatar).get("url");
         if (userDetails.getAuthorities().isEmpty()) {
             Customer customer = (Customer) userDetails;
             customer.setAvtUrl(url);
@@ -99,8 +106,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public Object me() {
         UserDetails userDetails = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         if (userDetails.getAuthorities().isEmpty()) {
-        Customer customer = (Customer) userDetails;
-        return CustomerResponse.from(customer);}
-        else return (Staff) userDetails;
+            Customer customer = (Customer) userDetails;
+            return CustomerResponse.from(customer);
+        } else return (Staff) userDetails;
     }
 }
