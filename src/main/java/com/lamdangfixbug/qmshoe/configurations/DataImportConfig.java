@@ -2,6 +2,8 @@ package com.lamdangfixbug.qmshoe.configurations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
+import com.lamdangfixbug.qmshoe.cart.entity.Cart;
+import com.lamdangfixbug.qmshoe.cart.repository.CartRepository;
 import com.lamdangfixbug.qmshoe.order.entity.Order;
 import com.lamdangfixbug.qmshoe.order.entity.TopCustomer;
 import com.lamdangfixbug.qmshoe.order.repository.OrderRepository;
@@ -42,11 +44,12 @@ public class DataImportConfig {
     private final StaffRepository staffRepository;
     private final RatingRepository ratingRepository;
     private final OrderRepository orderRepository;
+    private final CartRepository cartRepository;
 
     public DataImportConfig(CategoryRepository categoryRepository, BrandRepository brandRepository,
                             SizeRepository sizeRepository, ColorRepository colorRepository,
                             ProductRepository productRepository, ProductOptionRepository productOptionRepository,
-                            ProductImageRepository productImageRepository, CustomerRepository customerRepository, CustomerRepository customerRepository1, TopCustomerRepository topCustomerRepository, StaffRepository staffRepository, RatingRepository ratingRepository, OrderRepository orderRepository) {
+                            ProductImageRepository productImageRepository, CustomerRepository customerRepository, CustomerRepository customerRepository1, TopCustomerRepository topCustomerRepository, StaffRepository staffRepository, RatingRepository ratingRepository, OrderRepository orderRepository, CartRepository cartRepository) {
         this.categoryRepository = categoryRepository;
         this.brandRepository = brandRepository;
         this.sizeRepository = sizeRepository;
@@ -59,6 +62,7 @@ public class DataImportConfig {
         this.staffRepository = staffRepository;
         this.ratingRepository = ratingRepository;
         this.orderRepository = orderRepository;
+        this.cartRepository = cartRepository;
     }
 
 
@@ -86,6 +90,7 @@ public class DataImportConfig {
                         .phoneNumber("0" + random.nextInt(200000000, 999999999)).password(password).build());
                 customers.add(c);
                 topCustomerRepository.save(TopCustomer.builder().customer(c).spend(0).memberShipClass("").build());
+                cartRepository.save(Cart.builder().customerId(c.getId()).build());
             }
 
             while (stream.ready()) {

@@ -35,7 +35,7 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public List<RatingResponse> getAllRatings(Map<String, Object> params) {
 
-        return ratingRepository.findAll(Utils.buildPageable(params)).stream().map(RatingResponse::from).toList();
+        return ratingRepository.getAllRatings(Utils.buildPageable(params)).stream().map(RatingResponse::from).toList();
     }
 
     @Override

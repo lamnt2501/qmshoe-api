@@ -13,16 +13,18 @@ import java.util.Map;
 @RequestMapping("/api/v1/management/ratings")
 public class RatingManagementController {
     private final RatingService ratingService;
+
     public RatingManagementController(RatingService ratingService) {
         this.ratingService = ratingService;
     }
+
     @GetMapping
-    public ResponseEntity<List<RatingResponse>> getRatings(@RequestParam Map<String,Object> params) {
+    public ResponseEntity<List<RatingResponse>> getRatings(@RequestParam Map<String, Object> params) {
         return ResponseEntity.ok(ratingService.getAllRatings(params));
     }
 
     @GetMapping("/product/{id}")
-    public ResponseEntity<List<RatingResponse>> getRatings(@PathVariable int id,@RequestParam Map<String,Object> params) {
-        return ResponseEntity.ok(ratingService.getRatingsByProductId(id,params));
+    public ResponseEntity<List<RatingResponse>> getRatings(@PathVariable int id, @RequestParam Map<String, Object> params) {
+        return ResponseEntity.ok(ratingService.getRatingsByProductId(id, params));
     }
 }
