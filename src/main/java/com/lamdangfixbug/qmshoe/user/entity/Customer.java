@@ -31,6 +31,9 @@ public class Customer implements UserDetails {
     private String password;
     private String phoneNumber;
     private String avtUrl;
+    private LocalDateTime birthday;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
