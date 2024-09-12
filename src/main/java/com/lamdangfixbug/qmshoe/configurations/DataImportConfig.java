@@ -65,7 +65,7 @@ public class DataImportConfig {
     }
 
 
-    @Bean
+//    @Bean
     CommandLineRunner commandLineRunner() {
         return args -> loadData();
     }
@@ -84,7 +84,7 @@ public class DataImportConfig {
             List<Customer> customers = new ArrayList<>();
             String[] avtUrl = {
                     "https://scontent.fhan5-2.fna.fbcdn.net/v/t1.6435-9/79688722_568320937296602_7578883004005613568_n.jpg?stp=dst-jpg_s600x600&_nc_cat=102&ccb=1-7&_nc_sid=f727a1&_nc_ohc=1vOlnmdOK5UQ7kNvgHWZYst&_nc_ht=scontent.fhan5-2.fna&oh=00_AYAi-QJbxcktfvAK4TpQRxS9Jf53Hipipu1gu__RjwJ-dw&oe=6707943C",
-                    "https://www.facebook.com/photo/?fbid=568320980629931&set=pcb.568327270629302&__cft__[0]=AZW2PE6wdBE3wUwDrSFR2PvMesf8mUVAgAR1Lz4eIoLRv8i3tElVugOp6-ybkAWAoQmucoYqVPundHYZvdf0fEb_fDkn4kZkrP8BnsJ3PuukjjCbrZY22fZhB6UNy6SxwgLtOV6in5-oMqdPSRwwjpPSMFyJ93H0bkUikoGm91Af6SRvGEZpD1S1ssmHJwntDLI&__tn__=*bH-R",
+                    "https://scontent.fhan5-9.fna.fbcdn.net/v/t1.6435-9/78675210_568320983963264_1935698230813655040_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=f727a1&_nc_ohc=9hnjCR--a28Q7kNvgG2g-Y2&_nc_ht=scontent.fhan5-9.fna&oh=00_AYCuwfYHNZ1cV1qODnJf9IVivTsuQMQod4OIdsrc8qhzhA&oe=6707EB63",
                     "https://scontent.fhan5-6.fna.fbcdn.net/v/t1.6435-9/79792611_568321050629924_3933262854186074112_n.jpg?stp=dst-jpg_s600x600&_nc_cat=105&ccb=1-7&_nc_sid=f727a1&_nc_ohc=a0O_uUOxHMcQ7kNvgEZCSI1&_nc_ht=scontent.fhan5-6.fna&oh=00_AYB4bKonlUGCwyPS1F3kHZp0oWYIFYvGzmgPsmUdQaq9Sw&oe=670793CB",
                     "https://scontent.fhan5-9.fna.fbcdn.net/v/t1.6435-9/79708883_568321130629916_4581882986957373440_n.jpg?stp=dst-jpg_s600x600&_nc_cat=109&ccb=1-7&_nc_sid=f727a1&_nc_ohc=gQlST5BZ61kQ7kNvgGl5DnV&_nc_ht=scontent.fhan5-9.fna&oh=00_AYApG6WIGZ0Y2jGE1W8eRMGx8AlGtfPJ1cfG6-wx08siew&oe=67078A15",
                     "https://scontent.fhan5-2.fna.fbcdn.net/v/t1.6435-9/79166428_568321180629911_4327462013539188736_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=f727a1&_nc_ohc=i1GYtr-HSqUQ7kNvgEztplE&_nc_ht=scontent.fhan5-2.fna&oh=00_AYCtRpWzUlEj97opDv-lTmPoWuRHp4QSl5HtLiDu2E7mmg&oe=670777B2",

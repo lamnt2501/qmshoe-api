@@ -108,8 +108,9 @@ public class ProductServiceImpl implements ProductService {
         int categoryId = params.get("category") != null ? Integer.parseInt((String) params.get("category")) : 1;
         double minPrice = params.get("minPrice") != null ? Double.parseDouble((String) params.get("minPrice")) : 0;
         double maxPrice = params.get("maxPrice") != null ? Double.parseDouble((String) params.get("maxPrice")) : 3000000;
+        String name = params.get("name") != null ? params.get("name").toString() : "";
         return productRepository
-                .getFilteredProduct(categoryId, minPrice, maxPrice, colors, sizes,
+                .getFilteredProduct(categoryId, minPrice, maxPrice, colors, sizes,name,
 //                        active,
                         pageable);
     }
