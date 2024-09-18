@@ -129,6 +129,14 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 			<version>3.3.2</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
+<!--		<dependency>-->
+<!--			<groupId>com.google.firebase</groupId>-->
+<!--			<artifactId>firebase-admin</artifactId>-->
+<!--			<version>9.3.0</version>-->
+<!--		</dependency>-->
+
 	</dependencies>
 
 	<build>
