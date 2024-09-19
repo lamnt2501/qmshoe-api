@@ -1,0 +1,6 @@
+package com.lamdangfixbug.qmshoe.user.entity;
+
+public enum Permission {
+    ADMIN_READ,ADMIN_UPDATE,ADMIN_DELETE,ADMIN_CREATE,ADMIN_ALL,
+    MANAGER_READ,MANAGER_UPDATE,MANAGER_DELETE,MANAGER_CREATE, MANAGER_ALL;
+}
