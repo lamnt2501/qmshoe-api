@@ -1,5 +1,6 @@
 package com.lamdangfixbug.qmshoe.order.controller;
 
+import com.lamdangfixbug.qmshoe.order.entity.OrderStatus;
 import com.lamdangfixbug.qmshoe.order.payload.mapper.OrderMapper;
 import com.lamdangfixbug.qmshoe.order.payload.request.UpdateOrderStatusRequest;
 import com.lamdangfixbug.qmshoe.order.payload.response.OrderResponse;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,5 +57,12 @@ public class OrderManagementController {
     @GetMapping("/top-customer")
     public ResponseEntity<?> topCustomer() {
         return ResponseEntity.ok(orderService.getTopCustomer());
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<?> countOrderByStatus(@PathVariable String status) {
+        HashMap<String,Object> res = new HashMap<>();
+        res.put("data",orderService.countOrderByOrderStatus(OrderStatus.valueOf(status)));
+        return ResponseEntity.ok(res);
     }
 }
