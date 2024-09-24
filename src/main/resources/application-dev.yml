@@ -34,3 +34,4 @@ jwt:
 
 qm:
   reset-password-url: ${QM_RESET_PASSWORD_URL}
+  admin-origin: ${FRONT_END_ADMIN_URL}

@@ -1,6 +1,7 @@
 package com.lamdangfixbug.qmshoe.order.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lamdangfixbug.qmshoe.notify.service.NotifyService;
 import com.lamdangfixbug.qmshoe.order.entity.Order;
 import com.lamdangfixbug.qmshoe.order.payload.mapper.OrderMapper;
 import com.lamdangfixbug.qmshoe.order.payload.request.OrderRequest;
@@ -24,10 +25,12 @@ public class OrderController {
     private final OrderService orderService;
     private final VNPayService vnPayService;
     private final OrderMapper orderMapper;
-    public OrderController(OrderService orderService, VNPayService vnPayService, OrderMapper orderMapper) {
+    private final NotifyService notifyService;
+    public OrderController(OrderService orderService, VNPayService vnPayService, OrderMapper orderMapper, NotifyService notifyService) {
         this.orderService = orderService;
         this.vnPayService = vnPayService;
         this.orderMapper = orderMapper;
+        this.notifyService = notifyService;
     }
 
     @GetMapping
@@ -41,26 +44,27 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Map<String,String>> createOrder(@RequestBody String order, HttpServletRequest request) throws IOException {
+    public ResponseEntity<Map<String, String>> createOrder(@RequestBody String order, HttpServletRequest request) throws IOException {
         OrderRequest orderRequest;
         ObjectMapper mapper = new ObjectMapper();
         orderRequest = mapper.readValue(order, OrderRequest.class);
         Order createdOrder = orderService.placeOrder(orderRequest);
-        Map<String,String> response = new HashMap<>();
+        Map<String, String> response = new HashMap<>();
 
         if (!orderRequest.getPaymentMethod().getName().equalsIgnoreCase("COD")) {
 
             String paymentUrl = vnPayService.getPaymentUrl(
-                   createdOrder,
+                    createdOrder,
                     request.getRemoteAddr());
-            response.put("Message","Redirect to checkout");
+            response.put("Message", "Redirect to checkout");
             response.put("PaymentUrl", paymentUrl);
             response.put("StatusCode", String.valueOf(HttpStatus.TEMPORARY_REDIRECT.value()));
-        }else {
+        } else {
             response.put("Message", "Created Order Successfully");
             response.put("StatusCode", String.valueOf(HttpStatus.OK.value()));
         }
         response.put("OrderId", String.valueOf(createdOrder.getId()));
+        notifyService.notify("New order! #" + createdOrder.getId(),"/order");
         return ResponseEntity.ok(response);
     }
 

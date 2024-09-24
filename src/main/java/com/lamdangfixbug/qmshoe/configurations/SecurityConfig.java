@@ -42,6 +42,7 @@ public class SecurityConfig {
             "api/v1/sizes/**",
             "api/v1/payments/**",
             "api/v1/discounts/**",
+            "ws",
             //------
             "/v2/api-docs",
             "/v3/api-docs",
