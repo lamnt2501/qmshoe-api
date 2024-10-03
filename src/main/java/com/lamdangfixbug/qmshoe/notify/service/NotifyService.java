@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class NotifyService {
-    private SimpMessagingTemplate template;
+    private final SimpMessagingTemplate template;
 
     public NotifyService(SimpMessagingTemplate template) {
         this.template = template;

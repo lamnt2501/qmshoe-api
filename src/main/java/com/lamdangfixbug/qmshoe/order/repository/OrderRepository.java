@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> {
-    @Query(value = "select o.* from orders o where o.customer_id =  :customerId", nativeQuery = true)
+    @Query(value = "select * from orders o where o.customer_id =  :customerId", nativeQuery = true)
     Page<Order> findByCustomer(int customerId, Pageable pageable);
 
 
@@ -30,6 +30,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     int countByStatus(OrderStatus status);
 
-    @Query(value = "select * from orders where customer_id = :customerId", nativeQuery = true)
+    @Query(value = "select * from orders" +
+            " where customer_id = :customerId", nativeQuery = true)
     List<Order> findByCustomer_Id(int customerId, Pageable pageable);
 }

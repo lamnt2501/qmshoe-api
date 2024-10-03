@@ -1,9 +1,12 @@
 package com.lamdangfixbug.qmshoe.order.service.impl;
 
 import com.lamdangfixbug.qmshoe.cart.entity.Cart;
+import com.lamdangfixbug.qmshoe.cart.entity.CartItem;
 import com.lamdangfixbug.qmshoe.cart.entity.embedded.CartItemPK;
 import com.lamdangfixbug.qmshoe.cart.repository.CartItemRepository;
 import com.lamdangfixbug.qmshoe.cart.repository.CartRepository;
+
+import com.lamdangfixbug.qmshoe.cart.service.CartService;
 import com.lamdangfixbug.qmshoe.exceptions.InsufficientInventoryException;
 import com.lamdangfixbug.qmshoe.exceptions.ResourceNotFoundException;
 import com.lamdangfixbug.qmshoe.exceptions.UpdateOrderException;
@@ -63,7 +66,18 @@ public class OrderServiceImpl implements OrderService {
     private final TopCustomerRepository topCustomerRepository;
     private final OrderMapper mapper;
 
-    public OrderServiceImpl(OrderRepository orderRepository, ProductOptionRepository productOptionRepository, OrderStatusTrackingRepository orderStatusTrackingRepository, AddressRepository addressRepository, PaymentDetailsRepository paymentDetailsRepository, CartItemRepository cartItemRepository, CartRepository cartRepository, ProductBestSellerRepository productBestSellerRepository, ProductRepository productRepository, TopCustomerRepository topCustomerRepository, OrderMapper mapper) {
+    public OrderServiceImpl(OrderRepository orderRepository,
+                            ProductOptionRepository productOptionRepository,
+                            OrderStatusTrackingRepository orderStatusTrackingRepository,
+                            AddressRepository addressRepository,
+                            PaymentDetailsRepository paymentDetailsRepository,
+                            CartItemRepository cartItemRepository,
+                            CartRepository cartRepository,
+                            ProductBestSellerRepository productBestSellerRepository,
+                            ProductRepository productRepository,
+                            TopCustomerRepository topCustomerRepository,
+                            OrderMapper mapper,
+                            CartService cartService) {
         this.orderRepository = orderRepository;
         this.productOptionRepository = productOptionRepository;
         this.orderStatusTrackingRepository = orderStatusTrackingRepository;
@@ -75,6 +89,7 @@ public class OrderServiceImpl implements OrderService {
         this.productRepository = productRepository;
         this.topCustomerRepository = topCustomerRepository;
         this.mapper = mapper;
+
     }
 
     @Override
@@ -145,9 +160,14 @@ public class OrderServiceImpl implements OrderService {
             order.setTotal(order.getTotal() + oir.getQuantity() * productOption.getPrice());
 
             // update cart
-            cartItemRepository.deleteById(
+            CartItem cartItem = cartItemRepository.findById(CartItemPK.builder().cartId(cart.getId()).sku(oir.getSku()).build()).orElseThrow(()->new ResourceNotFoundException("Cart item not found"));
+            if(oir.getQuantity() == cartItem.getQuantity())
+                cartItemRepository.deleteById(
                     CartItemPK.builder().cartId(cart.getId()).sku(oir.getSku()).build()
-            );
+            ); else {
+                cartItem.setQuantity(cartItem.getQuantity() - oir.getQuantity());
+                cartItemRepository.save(cartItem);
+            }
         }
 
         order.setOrderItems(orderItems);
