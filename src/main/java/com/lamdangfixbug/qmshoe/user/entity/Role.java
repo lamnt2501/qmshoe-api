@@ -7,30 +7,16 @@ import java.util.List;
 
 public enum Role {
     ADMIN(List.of(
-            Permission.ADMIN_CREATE,
-            Permission.ADMIN_DELETE,
-            Permission.ADMIN_UPDATE,
-            Permission.ADMIN_READ,
-            Permission.ADMIN_ALL,
-            Permission.MANAGER_CREATE,
-            Permission.MANAGER_DELETE,
-            Permission.MANAGER_UPDATE,
-            Permission.MANAGER_READ,
-            Permission.MANAGER_ALL
+            Permission.ALL
     )),
-    MANAGER(List.of(
-            Permission.MANAGER_CREATE,
-            Permission.MANAGER_DELETE,
-            Permission.MANAGER_UPDATE,
-            Permission.MANAGER_READ,
-            Permission.MANAGER_ALL
+    ACCOUNTANT(List.of(
+            Permission.READ,
+            Permission.PAYMENT_UPDATE
     )),
-    READ(
-            List.of(
-                    Permission.ADMIN_READ,
-                    Permission.MANAGER_READ
-            )
-    );
+    ORDER_PROCESSOR(List.of(
+            Permission.READ,
+            Permission.ORDER_UPDATE
+    ));
 
     private final List<Permission> permissions;
 

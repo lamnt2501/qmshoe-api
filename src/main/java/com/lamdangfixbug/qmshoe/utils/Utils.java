@@ -22,7 +22,8 @@ public class Utils {
     public static Pageable buildPageable(Map<String, Object> params) {
         int page = 0;
         int limit = 20;
-        String sortBy = "created_At";
+        String type = (String) params.get("type");
+        String sortBy = type != null ? "createdAt" : "created_At";
         Sort.Direction order = Sort.Direction.DESC;
         if (params.containsKey("page")) {
             page = Math.max(Integer.parseInt((String) params.get("page")) - 1, 0);

@@ -1,5 +1,6 @@
 package com.lamdangfixbug.qmshoe.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
@@ -28,8 +29,10 @@ public class Staff implements UserDetails {
     @Email
     private String email;
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
     private String phoneNumber;
+    @Column(length = 1000)
     private String avtUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

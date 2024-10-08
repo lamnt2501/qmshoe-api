@@ -1,7 +1,6 @@
 package com.lamdangfixbug.qmshoe.order.service.impl;
 
 import com.lamdangfixbug.qmshoe.cart.entity.Cart;
-import com.lamdangfixbug.qmshoe.cart.entity.CartItem;
 import com.lamdangfixbug.qmshoe.cart.entity.embedded.CartItemPK;
 import com.lamdangfixbug.qmshoe.cart.repository.CartItemRepository;
 import com.lamdangfixbug.qmshoe.cart.repository.CartRepository;
@@ -45,7 +44,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -228,8 +226,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getAllOrdersAdmin(Map<String, Object> params) {
+        params.put("type","spring");
         Pageable pageable = Utils.buildPageable(params);
-        return orderRepository.findAllOrder(pageable).getContent();
+        String status = (String) params.get("status");
+        List<OrderStatus> statuses = status != null ? List.of(OrderStatus.valueOf(status)) : List.of(OrderStatus.WAITING, OrderStatus.APPROVED, OrderStatus.SHIPPING, OrderStatus.SUCCEEDED, OrderStatus.CANCEL);
+        return orderRepository.findAllOrder(statuses, pageable).getContent();
     }
 
     @Override
@@ -293,7 +294,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-
     @Override
     public OrderSummary summary() {
         LocalDateTime now = LocalDateTime.now();
@@ -330,6 +330,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderResponse> getOrdersByCustomerId(int customerId) {
-        return orderRepository.findByCustomer_Id(customerId, PageRequest.of(0,20)).stream().map(mapper::map).toList();
+        return orderRepository.findByCustomer_Id(customerId, PageRequest.of(0, 20)).stream().map(mapper::map).toList();
+    }
+
+    @Override
+    public int countOrderByOrderStatus(OrderStatus status)
+    {
+        return orderRepository.countByStatus(status);
     }
 }

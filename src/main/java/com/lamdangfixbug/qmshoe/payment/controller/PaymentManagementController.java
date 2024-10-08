@@ -32,8 +32,19 @@ public class PaymentManagementController {
         return ResponseEntity.ok(res);
     }
 
-    @PostMapping("/revenue")
-    public  ResponseEntity<?> getRevenue(@RequestBody RevenueStatisticRequest request){
-        return ResponseEntity.ok(paymentService.getRevenue(request));
+    @GetMapping("/revenue")
+    public  ResponseEntity<?> getRevenue(@RequestParam String type,@RequestParam(required = false) Integer year,
+    @RequestParam(required = false) Integer month,@RequestParam(required = false) Integer day){
+        RevenueStatisticRequest.RevenueStatisticRequestBuilder builder = RevenueStatisticRequest.builder().type(type);
+        if(year != null){
+            builder.year(year);
+            if(month != null){
+                builder.month(month);
+                if(day != null){
+                    builder.day(day);
+                }
+            }
+        }
+        return ResponseEntity.ok(paymentService.getRevenue(builder.build()));
     }
 }

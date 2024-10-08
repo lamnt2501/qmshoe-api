@@ -22,18 +22,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
-import static com.lamdangfixbug.qmshoe.user.entity.Role.ADMIN;
-import static com.lamdangfixbug.qmshoe.user.entity.Role.MANAGER;
-import static com.lamdangfixbug.qmshoe.user.entity.Permission.ADMIN_ALL;
-import static com.lamdangfixbug.qmshoe.user.entity.Permission.ADMIN_READ;
-import static com.lamdangfixbug.qmshoe.user.entity.Permission.ADMIN_CREATE;
-import static com.lamdangfixbug.qmshoe.user.entity.Permission.ADMIN_DELETE;
-import static com.lamdangfixbug.qmshoe.user.entity.Permission.ADMIN_UPDATE;
-import static com.lamdangfixbug.qmshoe.user.entity.Permission.MANAGER_ALL;
-import static com.lamdangfixbug.qmshoe.user.entity.Permission.MANAGER_CREATE;
-import static com.lamdangfixbug.qmshoe.user.entity.Permission.MANAGER_DELETE;
-import static com.lamdangfixbug.qmshoe.user.entity.Permission.MANAGER_READ;
-import static com.lamdangfixbug.qmshoe.user.entity.Permission.MANAGER_UPDATE;
+import static com.lamdangfixbug.qmshoe.user.entity.Permission.*;
+import static com.lamdangfixbug.qmshoe.user.entity.Role.*;
 
 @Configuration
 @EnableWebSecurity
@@ -80,12 +70,14 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable).cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         req -> req.requestMatchers(WHITE_LIST_URL).permitAll()
-                                .requestMatchers("/api/v1/management/**").hasAnyRole(ADMIN.name(), MANAGER.name())
-                                .requestMatchers(HttpMethod.GET, "/api/v1/management/**").hasAnyAuthority(MANAGER_ALL.name(), ADMIN_ALL.name(), MANAGER_READ.name(), ADMIN_READ.name())
-                                .requestMatchers(HttpMethod.POST, "/api/v1/management/**").hasAnyAuthority(MANAGER_ALL.name(), ADMIN_ALL.name(), MANAGER_CREATE.name(), ADMIN_CREATE.name())
-                                .requestMatchers(HttpMethod.DELETE, "/api/v1/management/**").hasAnyAuthority(MANAGER_DELETE.name(), ADMIN_DELETE.name(), ADMIN_ALL.name(), MANAGER_ALL.name())
-                                .requestMatchers(HttpMethod.PATCH, "/api/v1/management/**").hasAnyAuthority(MANAGER_UPDATE.name(), ADMIN_UPDATE.name(), ADMIN_ALL.name(), MANAGER_ALL.name())
-                                .requestMatchers(HttpMethod.PUT, "/api/v1/management/**").hasAnyAuthority(MANAGER_ALL.name(), ADMIN_ALL.name(), ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
+                                .requestMatchers("/api/v1/management").hasAnyRole(ADMIN.name(), ACCOUNTANT.name(),ORDER_PROCESSOR.name())
+                                .requestMatchers(HttpMethod.GET, "/api/v1/management/**").hasAnyAuthority(READ.name(), ALL.name())
+                                .requestMatchers(HttpMethod.POST, "/api/v1/management/orders/**").hasAnyAuthority(ORDER_CREATE.name())
+                                .requestMatchers(HttpMethod.PUT, "/api/v1/management/orders/**").hasAnyAuthority(ORDER_UPDATE.name())
+                                .requestMatchers(HttpMethod.PATCH, "/api/v1/management/orders/**").hasAnyAuthority(ORDER_UPDATE.name())
+                                .requestMatchers(HttpMethod.PUT,"/api/v1/management/payments/**").hasAnyAuthority(PAYMENT_UPDATE.name())
+                                .requestMatchers(HttpMethod.PATCH,"/api/v1/management/payments/**").hasAnyAuthority(PAYMENT_UPDATE.name())
+                                .requestMatchers(HttpMethod.POST,"/api/v1/management/payments/**").hasAnyAuthority(PAYMENT_CREATE.name())
                                 .anyRequest().authenticated()
                 )
                 .userDetailsService(userDetailsService)
